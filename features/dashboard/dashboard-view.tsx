@@ -32,6 +32,7 @@ import { StatCard } from "@/components/shared/stat-card"
 import { useAuditLogs, useCurrentUser, useLookups, useSettings } from "@/hooks/use-data"
 import { usePageLoad } from "@/hooks/use-page-load"
 import { auditToActivity } from "@/lib/activity"
+import { OperationsSnapshot } from "./operations-snapshot"
 import { PendingTasks } from "./pending-tasks"
 import { useDashboardStats } from "./use-dashboard-stats"
 
@@ -149,19 +150,16 @@ export function DashboardView() {
             />
           </section>
 
-          <section className="grid items-start gap-5 xl:grid-cols-3" aria-label="Service overview">
-            <SectionCard
-              className="min-w-0 xl:col-span-2"
-              title="Certificate activity"
-              description="Certificates prepared each month · last 9 months"
-              actions={
-                <span className="hidden items-center gap-1.5 rounded-md bg-accent px-2 py-1 text-[10px] font-medium text-accent-foreground sm:inline-flex">
-                  <span className="size-1.5 rounded-full bg-chart-1" />
-                  Certificates
-                </span>
-              }
-            >
-              <TrendChart data={stats.monthlyCertificates} seriesName="Certificates" height={240} />
+          <OperationsSnapshot />
+
+          <section className="grid gap-4 lg:grid-cols-3">
+            <SectionCard title="Population by Gender" description="Active residents">
+              <ProportionBar
+                segments={[
+                  { label: "Male", value: stats.gender.male, color: "var(--chart-1)" },
+                  { label: "Female", value: stats.gender.female, color: "var(--chart-2)" },
+                ]}
+              />
             </SectionCard>
             <SectionCard
               className="min-w-0 xl:col-start-3 xl:row-span-2 xl:row-start-1"

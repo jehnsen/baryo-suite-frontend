@@ -3,21 +3,25 @@
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-/** Sticky submit/cancel bar for the full-page incident create/edit forms. */
-export function IncidentFormActionBar({
+/** Sticky submit/cancel bar for full-page create/edit forms. */
+export function FormActionBar({
   formId,
   submitLabel,
   isSubmitting,
   onCancel,
+  secondary,
 }: {
   formId: string
   submitLabel: string
   isSubmitting: boolean
   onCancel: () => void
+  /** Extra actions shown before Cancel (e.g. "Save as draft"). */
+  secondary?: React.ReactNode
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+    <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 lg:left-60">
       <div className="mx-auto flex max-w-4xl items-center justify-end gap-2 px-4 py-3 sm:px-6">
+        {secondary}
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>

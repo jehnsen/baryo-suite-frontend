@@ -24,11 +24,26 @@ function statusFor(date: string): CollectionStatus {
 }
 
 const BUSINESSES = [
-  ["Aling Rosa Sari-Sari Store", 500], ["JM Water Refilling Station", 1500], ["San Roque Bakery", 1000], ["Dela Cruz Tricycle Parts", 1000],
-  ["Mendoza Carinderia", 800], ["Bautista Computer Shop", 1500], ["Garcia Rice Retailer", 1000], ["Villanueva Hardware", 3000],
-  ["Kuya Jun's Barbershop", 500], ["Santos Pharmacy", 2000], ["RB Motorcycle Repair", 1000], ["Mabini St. Laundry Shop", 800],
-  ["Ocampo Dental Clinic", 2000], ["Riverside Food Stall", 500], ["Lacson Trading", 3000], ["Pascual Printing Services", 1000],
-  ["Galang Welding Shop", 1500], ["Cunanan Poultry Supply", 1500], ["Sampaguita Beauty Salon", 800], ["Kawayan Fresh Market Stall 3", 500],
+  ["Aling Rosa Sari-Sari Store", 500],
+  ["JM Water Refilling Station", 1500],
+  ["San Roque Bakery", 1000],
+  ["Dela Cruz Tricycle Parts", 1000],
+  ["Mendoza Carinderia", 800],
+  ["Bautista Computer Shop", 1500],
+  ["Garcia Rice Retailer", 1000],
+  ["Villanueva Hardware", 3000],
+  ["Kuya Jun's Barbershop", 500],
+  ["Santos Pharmacy", 2000],
+  ["RB Motorcycle Repair", 1000],
+  ["Mabini St. Laundry Shop", 800],
+  ["Ocampo Dental Clinic", 2000],
+  ["Riverside Food Stall", 500],
+  ["Lacson Trading", 3000],
+  ["Pascual Printing Services", 1000],
+  ["Galang Welding Shop", 1500],
+  ["Cunanan Poultry Supply", 1500],
+  ["Sampaguita Beauty Salon", 800],
+  ["Kawayan Fresh Market Stall 3", 500],
 ] as const
 
 const FACILITIES = [
@@ -49,14 +64,21 @@ const OTHERS = [
 function build(): Collection[] {
   const list: Omit<Collection, "id" | "transactionNumber">[] = []
   const pickResident = () => rng.pick(residents.filter((r) => r.status === "Active" && Number(r.birthDate.slice(0, 4)) <= 2006))
-  const method = (): PaymentMethod => rng.weighted([["Cash", 16], ["GCash", 3], ["Maya", 1], ["Bank Transfer", 1]] as const)
+  const method = (): PaymentMethod =>
+    rng.weighted([
+      ["Cash", 16],
+      ["GCash", 3],
+      ["Maya", 1],
+      ["Bank Transfer", 1],
+    ] as const)
 
   // 1) Certificate fees already paid in the Certificates module.
   certificates
     .filter((c) => c.status === "Released" && c.orNumber && c.fee > 0 && c.dateIssued >= "2026-01-01")
     .forEach((c) => {
       const r = residents.find((x) => x.id === c.residentId)
-      const type: CollectionType = c.type === "Barangay Clearance" ? "Barangay Clearance" : c.type === "Business Clearance" ? "Business Clearance" : "Certification Fee"
+      const type: CollectionType =
+        c.type === "Barangay Clearance" ? "Barangay Clearance" : c.type === "Business Clearance" ? "Business Clearance" : "Certification Fee"
       list.push({
         orNumber: c.orNumber!,
         date: c.dateIssued,
@@ -78,7 +100,17 @@ function build(): Collection[] {
 
   // 2) Business clearance renewals peak in January–February.
   for (let i = 0; i < 230; i++) {
-    const month = rng.weighted([[1, 9], [2, 5], [3, 2], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]] as const)
+    const month = rng.weighted([
+      [1, 9],
+      [2, 5],
+      [3, 2],
+      [4, 1],
+      [5, 1],
+      [6, 1],
+      [7, 1],
+      [8, 1],
+      [9, 1],
+    ] as const)
     const [name, base] = rng.pick(BUSINESSES)
     const r = pickResident()
     const date = dateIn(month)
@@ -103,19 +135,67 @@ function build(): Collection[] {
     const [description, amount] = rng.pick(FACILITIES)
     const r = pickResident()
     const date = dateIn(rng.int(1, 9))
-    list.push({ orNumber: `OR-${pad(or++, 7)}`, date, payerName: `${r.firstName} ${r.lastName}`, residentId: r.id, type: "Facility Fee", description, amount, paymentMethod: method(), collectorId: rng.pick(COLLECTORS), status: statusFor(date), createdAt: `${date}T14:00:00+08:00` })
+    list.push({
+      orNumber: `OR-${pad(or++, 7)}`,
+      date,
+      payerName: `${r.firstName} ${r.lastName}`,
+      residentId: r.id,
+      type: "Facility Fee",
+      description,
+      amount,
+      paymentMethod: method(),
+      collectorId: rng.pick(COLLECTORS),
+      status: statusFor(date),
+      createdAt: `${date}T14:00:00+08:00`,
+    })
   }
   for (let month = 1; month <= 9; month++) {
     for (let stall = 1; stall <= 6; stall++) {
       const date = `2026-${pad(month, 2)}-${pad(Math.min(5 + stall, 12), 2)}`
-      list.push({ orNumber: `OR-${pad(or++, 7)}`, date, payerName: `Stall ${stall} Lessee`, businessName: `Kawayan Fresh Market Stall ${stall}`, type: "Other Barangay Collection", description: OTHERS[0][0], amount: OTHERS[0][1], paymentMethod: "Cash", collectorId: "usr-004", status: statusFor(date), createdAt: `${date}T08:30:00+08:00` })
+      list.push({
+        orNumber: `OR-${pad(or++, 7)}`,
+        date,
+        payerName: `Stall ${stall} Lessee`,
+        businessName: `Kawayan Fresh Market Stall ${stall}`,
+        type: "Other Barangay Collection",
+        description: OTHERS[0][0],
+        amount: OTHERS[0][1],
+        paymentMethod: "Cash",
+        collectorId: "usr-004",
+        status: statusFor(date),
+        createdAt: `${date}T08:30:00+08:00`,
+      })
     }
   }
   for (let i = 0; i < 120; i++) {
     const [description, amount] = rng.pick(OTHERS.slice(1))
     const r = pickResident()
-    const date = dateIn(rng.weighted([[1, 5], [2, 3], [3, 2], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]] as const))
-    list.push({ orNumber: `OR-${pad(or++, 7)}`, date, payerName: `${r.firstName} ${r.lastName}`, residentId: r.id, type: "Other Barangay Collection", description, amount, paymentMethod: "Cash", collectorId: rng.pick(COLLECTORS), status: statusFor(date), createdAt: `${date}T11:00:00+08:00` })
+    const date = dateIn(
+      rng.weighted([
+        [1, 5],
+        [2, 3],
+        [3, 2],
+        [4, 1],
+        [5, 1],
+        [6, 1],
+        [7, 1],
+        [8, 1],
+        [9, 1],
+      ] as const),
+    )
+    list.push({
+      orNumber: `OR-${pad(or++, 7)}`,
+      date,
+      payerName: `${r.firstName} ${r.lastName}`,
+      residentId: r.id,
+      type: "Other Barangay Collection",
+      description,
+      amount,
+      paymentMethod: "Cash",
+      collectorId: rng.pick(COLLECTORS),
+      status: statusFor(date),
+      createdAt: `${date}T11:00:00+08:00`,
+    })
   }
 
   // A few cancelled receipts (spoiled O.R.s) keep the audit story realistic.
@@ -123,7 +203,12 @@ function build(): Collection[] {
 
   return list
     .sort((a, b) => a.date.localeCompare(b.date) || a.orNumber.localeCompare(b.orNumber))
-    .map((c, i) => ({ ...c, id: `col-${pad(i + 1, 4)}`, transactionNumber: `COL-2026-${pad(i + 1, 5)}`, depositReference: c.status === "Deposited" || c.status === "Reconciled" ? `LBP-DS-${c.date.replace(/-/g, "")}` : undefined }))
+    .map((c, i) => ({
+      ...c,
+      id: `col-${pad(i + 1, 4)}`,
+      transactionNumber: `COL-2026-${pad(i + 1, 5)}`,
+      depositReference: c.status === "Deposited" || c.status === "Reconciled" ? `LBP-DS-${c.date.replace(/-/g, "")}` : undefined,
+    }))
     .reverse()
 }
 

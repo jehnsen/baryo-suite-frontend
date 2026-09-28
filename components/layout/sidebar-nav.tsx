@@ -2,13 +2,16 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { NAV_GROUPS } from "@/lib/navigation"
+import { ALL_NAV_ITEMS, NAV_GROUPS } from "@/lib/navigation"
 import { useCurrentUser, useServiceRequests, useBlotters } from "@/hooks/use-data"
 import { cn } from "@/lib/utils"
 
 /** Role-filtered navigation shared by the desktop and mobile sidebars. */
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  // Only the most specific matching item is active (/finance vs /finance/allocations).
+  const activeHref = ALL_NAV_ITEMS.filter((i) => pathname === i.href || pathname.startsWith(i.href + "/")).sort((a, b) => b.href.length - a.href.length)[0]
+    ?.href
   const { canAccess } = useCurrentUser()
   const requests = useServiceRequests()
   const blotters = useBlotters()
@@ -27,7 +30,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           <div key={group.label} className="space-y-1">
             <p className="px-3 pb-1.5 text-[10px] font-semibold tracking-[0.14em] text-sidebar-foreground/55 uppercase">{group.label}</p>
             {items.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(item.href + "/")
+              const active = item.href === activeHref
               const badge = badges[item.href]
               return (
                 <Link

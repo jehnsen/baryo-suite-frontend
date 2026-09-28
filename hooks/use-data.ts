@@ -19,6 +19,25 @@ export const useAnnouncements = () => useAppStore((s) => s.announcements)
 export const useUsers = () => useAppStore((s) => s.users)
 export const useAuditLogs = () => useAppStore((s) => s.auditLogs)
 export const useSettings = () => useAppStore((s) => s.settings)
+// Phase 2
+export const useBudgets = () => useAppStore((s) => s.budgets)
+export const useAllocations = () => useAppStore((s) => s.allocations)
+export const useFundSources = () => useAppStore((s) => s.fundSources)
+export const usePPAs = () => useAppStore((s) => s.ppas)
+export const useCollections = () => useAppStore((s) => s.collections)
+export const useObligations = () => useAppStore((s) => s.obligations)
+export const useDisbursements = () => useAppStore((s) => s.disbursements)
+export const useExpenses = () => useAppStore((s) => s.expenses)
+export const useSessions = () => useAppStore((s) => s.sessions)
+export const useMinutes = () => useAppStore((s) => s.minutes)
+export const useOrdinances = () => useAppStore((s) => s.ordinances)
+export const useResolutions = () => useAppStore((s) => s.resolutions)
+export const useCommittees = () => useAppStore((s) => s.committees)
+export const useAssemblies = () => useAppStore((s) => s.assemblies)
+export const useProjects = () => useAppStore((s) => s.projects)
+export const useAssets = () => useAppStore((s) => s.assets)
+export const useInventoryItems = () => useAppStore((s) => s.inventoryItems)
+export const useInventoryTransactions = () => useAppStore((s) => s.inventoryTransactions)
 
 function useIndex<T extends { id: string }>(items: T[]) {
   return useMemo(() => new Map(items.map((i) => [i.id, i])), [items])
@@ -31,7 +50,15 @@ export function useLookups() {
   const officials = useIndex(useOfficials())
   const users = useIndex(useUsers())
   const certificates = useIndex(useCertificates())
-  return { residents, households, officials, users, certificates }
+  const ppas = useIndex(usePPAs())
+  const fundSources = useIndex(useFundSources())
+  const obligations = useIndex(useObligations())
+  const disbursements = useIndex(useDisbursements())
+  const committees = useIndex(useCommittees())
+  const sessions = useIndex(useSessions())
+  const projects = useIndex(useProjects())
+  const budgets = useIndex(useBudgets())
+  return { residents, households, officials, users, certificates, ppas, fundSources, obligations, disbursements, committees, sessions, projects, budgets }
 }
 
 export function useHouseholdMembers(householdId?: string) {
@@ -52,6 +79,8 @@ export function useCurrentUser() {
   return {
     user,
     role: user.role,
+    /** Official record linked to the signed-in user (for "assigned to me" scoping). */
+    officialId: user.officialId,
     can: (cap: Capability) => hasCapability(user.role, cap),
     canAccess: (module: ModuleKey) => canAccess(user.role, module),
   }

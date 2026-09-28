@@ -2,12 +2,25 @@
 
 import { useCallback, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { FileBadge, FileClock, Gavel, Home, Search, ShieldAlert, Users } from "lucide-react"
+import { FileBadge, FileClock, FolderKanban, Gavel, Home, Monitor, ScrollText, Search, ShieldAlert, Stamp, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandShortcut } from "@/components/ui/command"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { useModKeyHotkey } from "@/hooks/use-hotkey"
-import { useBlotters, useCertificates, useCurrentUser, useHouseholds, useIncidents, useLookups, useResidents, useServiceRequests } from "@/hooks/use-data"
+import {
+  useAssets,
+  useBlotters,
+  useCertificates,
+  useCurrentUser,
+  useHouseholds,
+  useIncidents,
+  useLookups,
+  useOrdinances,
+  useProjects,
+  useResidents,
+  useResolutions,
+  useServiceRequests,
+} from "@/hooks/use-data"
 import { ALL_NAV_ITEMS } from "@/lib/navigation"
 import { formalName, fullName } from "@/lib/format"
 import type { ModuleKey } from "@/types"
@@ -42,6 +55,10 @@ export function GlobalSearch() {
   const blotters = useBlotters()
   const incidents = useIncidents()
   const lookups = useLookups()
+  const ordinances = useOrdinances()
+  const resolutions = useResolutions()
+  const projects = useProjects()
+  const assets = useAssets()
 
   useModKeyHotkey(
     "k",
@@ -119,8 +136,40 @@ export function GlobalSearch() {
           .filter((i) => match(i.incidentNumber, i.type, i.location))
           .map((i) => ({ id: i.id, title: `${i.incidentNumber} – ${i.type}`, subtitle: i.location, href: `/incidents?open=${i.id}`, status: i.status })),
       },
+      {
+        module: "ordinances" as const,
+        heading: "Ordinances",
+        icon: ScrollText,
+        results: ordinances
+          .filter((o) => match(o.ordinanceNumber, o.title))
+          .map((o) => ({ id: o.id, title: o.ordinanceNumber, subtitle: o.title, href: `/governance/ordinances/${o.id}`, status: o.status })),
+      },
+      {
+        module: "resolutions" as const,
+        heading: "Resolutions",
+        icon: Stamp,
+        results: resolutions
+          .filter((r) => match(r.resolutionNumber, r.title))
+          .map((r) => ({ id: r.id, title: r.resolutionNumber, subtitle: r.title, href: `/governance/resolutions/${r.id}`, status: r.status })),
+      },
+      {
+        module: "projects" as const,
+        heading: "Projects",
+        icon: FolderKanban,
+        results: projects
+          .filter((p) => match(p.code, p.name, p.contractor))
+          .map((p) => ({ id: p.id, title: `${p.code} – ${p.name}`, subtitle: p.location, href: `/projects/${p.id}`, status: p.status })),
+      },
+      {
+        module: "assets" as const,
+        heading: "Assets",
+        icon: Monitor,
+        results: assets
+          .filter((a) => match(a.assetNumber, a.name, a.serialNumber))
+          .map((a) => ({ id: a.id, title: `${a.assetNumber} – ${a.name}`, subtitle: a.location, href: `/assets/${a.id}`, status: a.status })),
+      },
     ].filter((g) => canAccess(g.module) && g.results.length > 0)
-  }, [query, residents, households, certificates, requests, blotters, incidents, lookups, canAccess])
+  }, [query, residents, households, certificates, requests, blotters, incidents, lookups, canAccess, ordinances, resolutions, projects, assets])
 
   const go = (href: string) => {
     setOpen(false)

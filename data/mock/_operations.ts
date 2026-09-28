@@ -1,4 +1,15 @@
-import type { Asset, AssetCategory, AssetCondition, AssetStatus, InventoryItem, InventoryTransaction, MaintenanceRecord, Project, ProjectMilestone, StatusChange } from "@/types"
+import type {
+  Asset,
+  AssetCategory,
+  AssetCondition,
+  AssetStatus,
+  InventoryItem,
+  InventoryTransaction,
+  MaintenanceRecord,
+  Project,
+  ProjectMilestone,
+  StatusChange,
+} from "@/types"
 import { finance } from "./_finance"
 import { MOCK_TODAY, createRng, pad } from "./_seed"
 
@@ -14,7 +25,15 @@ const ppaByCode = (code: string) => finance.ppas.find((p) => p.code === code)!
 
 /* --------------------------------- Projects -------------------------------- */
 
-const ms = (id: string, title: string, targetDate: string, progress: number, completionDate?: string, remarks?: string, delayed?: boolean): ProjectMilestone => ({
+const ms = (
+  id: string,
+  title: string,
+  targetDate: string,
+  progress: number,
+  completionDate?: string,
+  remarks?: string,
+  delayed?: boolean,
+): ProjectMilestone => ({
   id,
   title,
   targetDate,
@@ -182,7 +201,11 @@ export const projects: Project[] = [
     actualCompletion: "2025-07-25",
     physicalProgress: 100,
     status: "Completed",
-    milestones: [ms("ms-6-1", "Structural repairs", "2025-05-15", 100, "2025-05-10"), ms("ms-6-2", "Finishing works", "2025-07-15", 100, "2025-07-18"), ms("ms-6-3", "Turnover", "2025-07-31", 100, "2025-07-25")],
+    milestones: [
+      ms("ms-6-1", "Structural repairs", "2025-05-15", 100, "2025-05-10"),
+      ms("ms-6-2", "Finishing works", "2025-07-15", 100, "2025-07-18"),
+      ms("ms-6-3", "Turnover", "2025-07-31", 100, "2025-07-25"),
+    ],
     attachments: [{ id: "att-prj6-1", name: "certificate-of-completion.pdf", size: 402_000, type: "application/pdf", uploadedAt: ts("2025-07-28", 10) }],
     history: projHistory([
       ["Planning", "2025-01-15"],
@@ -218,30 +241,262 @@ interface AssetSeed {
 }
 
 const ASSETS: AssetSeed[] = [
-  { name: "Desktop Computer (Core i5, 16GB)", category: "IT Equipment", cost: 38_500, date: "2024-02-12", source: "Barangay Fund", custodian: "off-010", location: "Secretary's Office", condition: "Good", count: 3 },
-  { name: "Laptop (Core i5)", category: "IT Equipment", cost: 42_000, date: "2025-06-18", source: "Barangay Fund", custodian: "off-011", location: "Treasurer's Office", condition: "Excellent" },
-  { name: "Laser Printer (Monochrome)", category: "Office Equipment", cost: 12_800, date: "2024-02-12", source: "Barangay Fund", custodian: "off-010", location: "Secretary's Office", condition: "Fair" },
-  { name: "Ink Tank Printer (Color)", category: "Office Equipment", cost: 9_500, date: "2025-01-20", source: "Barangay Fund", custodian: "off-016", location: "Records Room", condition: "For Repair", status: "Under Maintenance" },
-  { name: "Photocopier Machine", category: "Office Equipment", cost: 68_000, date: "2022-08-05", source: "City Government", custodian: "off-010", location: "Records Room", condition: "Fair" },
-  { name: "CCTV Camera (IP, 4MP)", category: "Security", cost: 18_000, date: "2026-06-05", source: "Barangay Fund – CCTV Expansion Phase 2", custodian: "off-012", location: "Major intersections", condition: "Excellent", count: 8, dv: "PO-2026-02" },
-  { name: "CCTV Network Video Recorder (16-ch)", category: "Security", cost: 26_000, date: "2023-04-11", source: "Barangay Fund", custodian: "off-012", location: "Barangay Operations Center", condition: "Good" },
-  { name: "Handheld Radio (VHF)", category: "Communication", cost: 4_800, date: "2026-05-14", source: "Provincial Government of Bulacan", custodian: "off-012", location: "Tanod Outpost", condition: "Excellent", count: 6, dv: "DR-2026-01" },
-  { name: "Base Radio Station", category: "Communication", cost: 28_000, date: "2021-09-01", source: "City Government", custodian: "off-007", location: "Barangay Operations Center", condition: "Fair" },
-  { name: "Conference Table (12-seater)", category: "Furniture", cost: 24_000, date: "2020-03-10", source: "Barangay Fund", custodian: "off-010", location: "Session Hall", condition: "Good" },
-  { name: "Monobloc Chairs (set of 50)", category: "Furniture", cost: 22_500, date: "2023-10-02", source: "Donation – San Roque Parish", custodian: "off-017", location: "Storage Room", condition: "Good", status: "In Storage" },
-  { name: "Steel Filing Cabinet (4-drawer)", category: "Furniture", cost: 8_900, date: "2019-06-21", source: "Barangay Fund", custodian: "off-016", location: "Records Room", condition: "Good", count: 2 },
-  { name: "Diesel Generator Set (15 kVA)", category: "Power", cost: 185_000, date: "2022-11-18", source: "City Government", custodian: "off-007", location: "Barangay Hall grounds", condition: "Good" },
-  { name: "Patrol Vehicle (Mitsubishi L300)", category: "Vehicle", cost: 1_150_000, date: "2021-02-24", source: "City Government", custodian: "off-012", location: "Barangay Hall parking", condition: "Good", serial: "Plate No. SAB 4172" },
-  { name: "Barangay Ambulance (Toyota Hiace)", category: "Vehicle", cost: 1_980_000, date: "2023-07-03", source: "Provincial Government of Bulacan", custodian: "off-002", location: "Health Station", condition: "Good", serial: "Plate No. SAF 8810" },
-  { name: "Patrol Motorcycle (Honda XRM)", category: "Vehicle", cost: 78_000, date: "2019-05-15", source: "Barangay Fund", custodian: "off-013", location: "Tanod Outpost", condition: "Unserviceable", status: "Disposed" },
-  { name: "Rubber Rescue Boat with Paddles", category: "Rescue Equipment", cost: 95_000, date: "2022-06-30", source: "Provincial Government of Bulacan", custodian: "off-007", location: "DRRM Storage", condition: "Good" },
-  { name: "Life Vests (set of 20)", category: "Rescue Equipment", cost: 36_000, date: "2026-05-14", source: "Provincial Government of Bulacan", custodian: "off-007", location: "DRRM Storage", condition: "Excellent", dv: "DR-2026-01" },
-  { name: "Spine Board with Head Immobilizer", category: "Rescue Equipment", cost: 12_500, date: "2024-08-09", source: "Barangay Fund", custodian: "off-007", location: "DRRM Storage", condition: "Good", count: 2 },
-  { name: "Chainsaw", category: "Rescue Equipment", cost: 21_000, date: "2023-03-15", source: "Barangay Fund", custodian: "off-012", location: "DRRM Storage", condition: "Poor" },
-  { name: "Digital BP Apparatus", category: "Medical Equipment", cost: 3_800, date: "2025-02-20", source: "Barangay Fund", custodian: "off-002", location: "Health Station", condition: "Good", count: 2 },
-  { name: "Weighing Scale (Adult/Infant)", category: "Medical Equipment", cost: 6_500, date: "2024-01-25", source: "City Health Office", custodian: "off-002", location: "Health Station", condition: "Good" },
-  { name: "Public Address System", category: "Communication", cost: 32_000, date: "2022-02-14", source: "Barangay Fund", custodian: "off-017", location: "Storage Room", condition: "Fair", status: "In Storage" },
-  { name: "Air Conditioner (1.5 HP Inverter)", category: "Office Equipment", cost: 34_000, date: "2024-04-02", source: "Barangay Fund", custodian: "off-010", location: "Session Hall", condition: "Good", count: 2 },
+  {
+    name: "Desktop Computer (Core i5, 16GB)",
+    category: "IT Equipment",
+    cost: 38_500,
+    date: "2024-02-12",
+    source: "Barangay Fund",
+    custodian: "off-010",
+    location: "Secretary's Office",
+    condition: "Good",
+    count: 3,
+  },
+  {
+    name: "Laptop (Core i5)",
+    category: "IT Equipment",
+    cost: 42_000,
+    date: "2025-06-18",
+    source: "Barangay Fund",
+    custodian: "off-011",
+    location: "Treasurer's Office",
+    condition: "Excellent",
+  },
+  {
+    name: "Laser Printer (Monochrome)",
+    category: "Office Equipment",
+    cost: 12_800,
+    date: "2024-02-12",
+    source: "Barangay Fund",
+    custodian: "off-010",
+    location: "Secretary's Office",
+    condition: "Fair",
+  },
+  {
+    name: "Ink Tank Printer (Color)",
+    category: "Office Equipment",
+    cost: 9_500,
+    date: "2025-01-20",
+    source: "Barangay Fund",
+    custodian: "off-016",
+    location: "Records Room",
+    condition: "For Repair",
+    status: "Under Maintenance",
+  },
+  {
+    name: "Photocopier Machine",
+    category: "Office Equipment",
+    cost: 68_000,
+    date: "2022-08-05",
+    source: "City Government",
+    custodian: "off-010",
+    location: "Records Room",
+    condition: "Fair",
+  },
+  {
+    name: "CCTV Camera (IP, 4MP)",
+    category: "Security",
+    cost: 18_000,
+    date: "2026-06-05",
+    source: "Barangay Fund – CCTV Expansion Phase 2",
+    custodian: "off-012",
+    location: "Major intersections",
+    condition: "Excellent",
+    count: 8,
+    dv: "PO-2026-02",
+  },
+  {
+    name: "CCTV Network Video Recorder (16-ch)",
+    category: "Security",
+    cost: 26_000,
+    date: "2023-04-11",
+    source: "Barangay Fund",
+    custodian: "off-012",
+    location: "Barangay Operations Center",
+    condition: "Good",
+  },
+  {
+    name: "Handheld Radio (VHF)",
+    category: "Communication",
+    cost: 4_800,
+    date: "2026-05-14",
+    source: "Provincial Government of Bulacan",
+    custodian: "off-012",
+    location: "Tanod Outpost",
+    condition: "Excellent",
+    count: 6,
+    dv: "DR-2026-01",
+  },
+  {
+    name: "Base Radio Station",
+    category: "Communication",
+    cost: 28_000,
+    date: "2021-09-01",
+    source: "City Government",
+    custodian: "off-007",
+    location: "Barangay Operations Center",
+    condition: "Fair",
+  },
+  {
+    name: "Conference Table (12-seater)",
+    category: "Furniture",
+    cost: 24_000,
+    date: "2020-03-10",
+    source: "Barangay Fund",
+    custodian: "off-010",
+    location: "Session Hall",
+    condition: "Good",
+  },
+  {
+    name: "Monobloc Chairs (set of 50)",
+    category: "Furniture",
+    cost: 22_500,
+    date: "2023-10-02",
+    source: "Donation – San Roque Parish",
+    custodian: "off-017",
+    location: "Storage Room",
+    condition: "Good",
+    status: "In Storage",
+  },
+  {
+    name: "Steel Filing Cabinet (4-drawer)",
+    category: "Furniture",
+    cost: 8_900,
+    date: "2019-06-21",
+    source: "Barangay Fund",
+    custodian: "off-016",
+    location: "Records Room",
+    condition: "Good",
+    count: 2,
+  },
+  {
+    name: "Diesel Generator Set (15 kVA)",
+    category: "Power",
+    cost: 185_000,
+    date: "2022-11-18",
+    source: "City Government",
+    custodian: "off-007",
+    location: "Barangay Hall grounds",
+    condition: "Good",
+  },
+  {
+    name: "Patrol Vehicle (Mitsubishi L300)",
+    category: "Vehicle",
+    cost: 1_150_000,
+    date: "2021-02-24",
+    source: "City Government",
+    custodian: "off-012",
+    location: "Barangay Hall parking",
+    condition: "Good",
+    serial: "Plate No. SAB 4172",
+  },
+  {
+    name: "Barangay Ambulance (Toyota Hiace)",
+    category: "Vehicle",
+    cost: 1_980_000,
+    date: "2023-07-03",
+    source: "Provincial Government of Bulacan",
+    custodian: "off-002",
+    location: "Health Station",
+    condition: "Good",
+    serial: "Plate No. SAF 8810",
+  },
+  {
+    name: "Patrol Motorcycle (Honda XRM)",
+    category: "Vehicle",
+    cost: 78_000,
+    date: "2019-05-15",
+    source: "Barangay Fund",
+    custodian: "off-013",
+    location: "Tanod Outpost",
+    condition: "Unserviceable",
+    status: "Disposed",
+  },
+  {
+    name: "Rubber Rescue Boat with Paddles",
+    category: "Rescue Equipment",
+    cost: 95_000,
+    date: "2022-06-30",
+    source: "Provincial Government of Bulacan",
+    custodian: "off-007",
+    location: "DRRM Storage",
+    condition: "Good",
+  },
+  {
+    name: "Life Vests (set of 20)",
+    category: "Rescue Equipment",
+    cost: 36_000,
+    date: "2026-05-14",
+    source: "Provincial Government of Bulacan",
+    custodian: "off-007",
+    location: "DRRM Storage",
+    condition: "Excellent",
+    dv: "DR-2026-01",
+  },
+  {
+    name: "Spine Board with Head Immobilizer",
+    category: "Rescue Equipment",
+    cost: 12_500,
+    date: "2024-08-09",
+    source: "Barangay Fund",
+    custodian: "off-007",
+    location: "DRRM Storage",
+    condition: "Good",
+    count: 2,
+  },
+  {
+    name: "Chainsaw",
+    category: "Rescue Equipment",
+    cost: 21_000,
+    date: "2023-03-15",
+    source: "Barangay Fund",
+    custodian: "off-012",
+    location: "DRRM Storage",
+    condition: "Poor",
+  },
+  {
+    name: "Digital BP Apparatus",
+    category: "Medical Equipment",
+    cost: 3_800,
+    date: "2025-02-20",
+    source: "Barangay Fund",
+    custodian: "off-002",
+    location: "Health Station",
+    condition: "Good",
+    count: 2,
+  },
+  {
+    name: "Weighing Scale (Adult/Infant)",
+    category: "Medical Equipment",
+    cost: 6_500,
+    date: "2024-01-25",
+    source: "City Health Office",
+    custodian: "off-002",
+    location: "Health Station",
+    condition: "Good",
+  },
+  {
+    name: "Public Address System",
+    category: "Communication",
+    cost: 32_000,
+    date: "2022-02-14",
+    source: "Barangay Fund",
+    custodian: "off-017",
+    location: "Storage Room",
+    condition: "Fair",
+    status: "In Storage",
+  },
+  {
+    name: "Air Conditioner (1.5 HP Inverter)",
+    category: "Office Equipment",
+    cost: 34_000,
+    date: "2024-04-02",
+    source: "Barangay Fund",
+    custodian: "off-010",
+    location: "Session Hall",
+    condition: "Good",
+    count: 2,
+  },
 ]
 
 function buildAssets(): Asset[] {
@@ -253,13 +508,44 @@ function buildAssets(): Asset[] {
       const year = a.date.slice(0, 4)
       const maintenance: MaintenanceRecord[] = []
       if (a.category === "Vehicle" || a.category === "Power") {
-        maintenance.push({ id: `mnt-${n}-1`, date: "2026-02-10", type: "Preventive", description: a.category === "Vehicle" ? "Change oil, filters and tune-up" : "Change oil and load test", cost: a.category === "Vehicle" ? 6_800 : 3_200, performedBy: a.category === "Vehicle" ? "Baliwag Auto Service Center" : "PowerGen Services Bulacan" })
-        maintenance.push({ id: `mnt-${n}-2`, date: "2026-08-12", type: "Inspection", description: "Semi-annual inspection", cost: 0, performedBy: "Barangay Tanod (Motorpool)" })
+        maintenance.push({
+          id: `mnt-${n}-1`,
+          date: "2026-02-10",
+          type: "Preventive",
+          description: a.category === "Vehicle" ? "Change oil, filters and tune-up" : "Change oil and load test",
+          cost: a.category === "Vehicle" ? 6_800 : 3_200,
+          performedBy: a.category === "Vehicle" ? "Baliwag Auto Service Center" : "PowerGen Services Bulacan",
+        })
+        maintenance.push({
+          id: `mnt-${n}-2`,
+          date: "2026-08-12",
+          type: "Inspection",
+          description: "Semi-annual inspection",
+          cost: 0,
+          performedBy: "Barangay Tanod (Motorpool)",
+        })
       }
-      if (a.condition === "For Repair") maintenance.push({ id: `mnt-${n}-3`, date: "2026-09-18", type: "Repair", description: "Printhead replacement – awaiting parts", cost: 2_500, performedBy: "Baliwag Computer Center" })
-      if (a.name.startsWith("Photocopier")) maintenance.push({ id: `mnt-${n}-4`, date: "2026-05-06", type: "Repair", description: "Drum and toner replacement", cost: 5_400, performedBy: "Copier Solutions Inc." })
+      if (a.condition === "For Repair")
+        maintenance.push({
+          id: `mnt-${n}-3`,
+          date: "2026-09-18",
+          type: "Repair",
+          description: "Printhead replacement – awaiting parts",
+          cost: 2_500,
+          performedBy: "Baliwag Computer Center",
+        })
+      if (a.name.startsWith("Photocopier"))
+        maintenance.push({
+          id: `mnt-${n}-4`,
+          date: "2026-05-06",
+          type: "Repair",
+          description: "Drum and toner replacement",
+          cost: 5_400,
+          performedBy: "Copier Solutions Inc.",
+        })
       const conditionHistory = [{ date: a.date, condition: "Excellent" as AssetCondition, remarks: "Newly acquired.", byUserId: "usr-004" }]
-      if (a.condition !== "Excellent") conditionHistory.push({ date: "2026-01-20", condition: a.condition, remarks: "Annual physical count and inspection.", byUserId: "usr-004" })
+      if (a.condition !== "Excellent")
+        conditionHistory.push({ date: "2026-01-20", condition: a.condition, remarks: "Annual physical count and inspection.", byUserId: "usr-004" })
       list.push({
         id: `ast-${pad(n, 3)}`,
         assetNumber: `SRQ-${year}-${pad(n, 4)}`,
@@ -275,7 +561,10 @@ function buildAssets(): Asset[] {
         status: a.status ?? "Active",
         maintenance,
         conditionHistory,
-        attachments: a.cost >= 50_000 ? [{ id: `att-ast-${n}`, name: `property-acknowledgement-receipt-${n}.pdf`, size: 128_400, type: "application/pdf", uploadedAt: ts(a.date, 10) }] : [],
+        attachments:
+          a.cost >= 50_000
+            ? [{ id: `att-ast-${n}`, name: `property-acknowledgement-receipt-${n}.pdf`, size: 128_400, type: "application/pdf", uploadedAt: ts(a.date, 10) }]
+            : [],
         disbursementId: a.dv ? dvFor(a.dv) : undefined,
       })
     }
@@ -315,7 +604,16 @@ const ITEMS: [name: string, category: InventoryItem["category"], unit: string, r
   ["Paint (White, 4L)", "Maintenance Supplies", "can", 4, "Maintenance Room", 10, 1],
 ]
 
-const ISSUE_TO = ["Secretary's Office", "Treasurer's Office", "Barangay Health Station", "Tanod Outpost", "Records Room", "Session Hall", "Eco-Aides", "SK Office"]
+const ISSUE_TO = [
+  "Secretary's Office",
+  "Treasurer's Office",
+  "Barangay Health Station",
+  "Tanod Outpost",
+  "Records Room",
+  "Session Hall",
+  "Eco-Aides",
+  "SK Office",
+]
 
 function buildInventory() {
   const items: InventoryItem[] = []
@@ -325,7 +623,9 @@ function buildInventory() {
 
   ITEMS.forEach(([name, category, unit, reorder, location, opening, monthlyUse], i) => {
     const id = `inv-${pad(i + 1, 3)}`
-    const prefix = { "Office Supplies": "OFS", "Cleaning Supplies": "CLN", "Relief Supplies": "RLF", "Medical Supplies": "MED", "Maintenance Supplies": "MNT" }[category]
+    const prefix = { "Office Supplies": "OFS", "Cleaning Supplies": "CLN", "Relief Supplies": "RLF", "Medical Supplies": "MED", "Maintenance Supplies": "MNT" }[
+      category
+    ]
     items.push({ id, code: `${prefix}-${pad(i + 1, 3)}`, name, category, unit, reorderLevel: reorder, location })
     add({ itemId: id, type: "Stock In", quantity: opening, date: "2026-01-05", reference: "Beginning inventory (physical count)", byUserId: "usr-004" })
     let qty = opening
@@ -334,12 +634,27 @@ function buildInventory() {
         const use = Math.max(0, monthlyUse + rng.int(-1, 1))
         if (use > 0 && qty - use >= 0) {
           qty -= use
-          add({ itemId: id, type: "Stock Out", quantity: use, date: `2026-${pad(m, 2)}-${pad(rng.int(3, 26), 2)}`, issuedTo: rng.pick(ISSUE_TO), reference: `RIS-2026-${pad(m, 2)}${pad(i, 2)}`, byUserId: rng.pick(["usr-004", "usr-008"]) })
+          add({
+            itemId: id,
+            type: "Stock Out",
+            quantity: use,
+            date: `2026-${pad(m, 2)}-${pad(rng.int(3, 26), 2)}`,
+            issuedTo: rng.pick(ISSUE_TO),
+            reference: `RIS-2026-${pad(m, 2)}${pad(i, 2)}`,
+            byUserId: rng.pick(["usr-004", "usr-008"]),
+          })
         }
         if (qty <= reorder && m < 9 && rng.chance(0.7)) {
           const restock = Math.round(opening * 0.8)
           qty += restock
-          add({ itemId: id, type: "Stock In", quantity: restock, date: `2026-${pad(m, 2)}-27`, reference: `Delivery – PO-2026-${pad(m, 2)}${pad(i, 2)}`, byUserId: "usr-004" })
+          add({
+            itemId: id,
+            type: "Stock In",
+            quantity: restock,
+            date: `2026-${pad(m, 2)}-27`,
+            reference: `Delivery – PO-2026-${pad(m, 2)}${pad(i, 2)}`,
+            byUserId: "usr-004",
+          })
         }
       }
     }
@@ -347,12 +662,21 @@ function buildInventory() {
     if (category === "Relief Supplies") {
       const out = Math.round(opening * (name.startsWith("Rice") || name.startsWith("Bottled") ? 0.75 : 0.55))
       qty -= out
-      add({ itemId: id, type: "Stock Out", quantity: out, date: "2026-07-24", issuedTo: "Relief operations – Purok 3 (86 families)", reference: "Res. No. 2026-010", byUserId: "usr-004" })
+      add({
+        itemId: id,
+        type: "Stock Out",
+        quantity: out,
+        date: "2026-07-24",
+        issuedTo: "Relief operations – Purok 3 (86 families)",
+        reference: "Res. No. 2026-010",
+        byUserId: "usr-004",
+      })
       if (!name.startsWith("Sleeping") && !name.startsWith("Hygiene")) {
         add({ itemId: id, type: "Stock In", quantity: Math.round(opening * 0.4), date: "2026-08-20", reference: "Replenishment – QRF", byUserId: "usr-004" })
       }
     }
-    if (i % 7 === 3) add({ itemId: id, type: "Adjustment", quantity: -1, date: "2026-06-30", remarks: "Mid-year physical count variance (damaged).", byUserId: "usr-004" })
+    if (i % 7 === 3)
+      add({ itemId: id, type: "Adjustment", quantity: -1, date: "2026-06-30", remarks: "Mid-year physical count variance (damaged).", byUserId: "usr-004" })
   })
 
   return { items, transactions: transactions.filter((t) => t.date <= MOCK_TODAY).sort((a, b) => b.date.localeCompare(a.date)) }

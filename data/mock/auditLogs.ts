@@ -6,6 +6,15 @@ import { incidents } from "./incidents"
 import { residents } from "./residents"
 import { serviceRequests } from "./serviceRequests"
 import { users } from "./users"
+import { assets } from "./assets"
+import { budgets } from "./budgets"
+import { collections } from "./collections"
+import { disbursements } from "./disbursements"
+import { inventoryItems, inventoryTransactions } from "./inventory"
+import { obligations } from "./obligations"
+import { ordinances } from "./ordinances"
+import { projects } from "./projects"
+import { resolutions } from "./resolutions"
 import { createRng, pad, timestampDaysAgo } from "./_seed"
 
 /**
@@ -214,6 +223,137 @@ function build(): AuditLog[] {
       ipAddress: ip(),
     },
   )
+
+  // ---- Phase 2: finance, governance and operations (recent activity only)
+  const peso = (n: number) => `₱${n.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`
+  const recent = (iso: string) => iso >= "2026-06-01"
+
+  budgets.forEach((b) =>
+    b.history
+      .filter((h) => recent(h.at.slice(0, 10)) || h.status === "Approved")
+      .forEach((h) =>
+        logs.push({
+          timestamp: h.at,
+          userId: h.byUserId ?? "usr-004",
+          action: h.status === "Approved" ? "Approved" : h.status === "Draft" ? "Created" : "Status Changed",
+          module: "Budget",
+          recordId: b.id,
+          recordLabel: b.title,
+          details: `Budget moved to ${h.status}.${h.note ? " " + h.note : ""}`,
+          ipAddress: ip(),
+        }),
+      ),
+  )
+  obligations.forEach((o) =>
+    o.history
+      .filter((h) => recent(h.at.slice(0, 10)))
+      .forEach((h) =>
+        logs.push({
+          timestamp: h.at,
+          userId: h.byUserId ?? "usr-004",
+          action: h.status === "Approved" ? "Approved" : h.status === "Draft" ? "Created" : h.status === "Cancelled" ? "Cancelled" : "Submitted",
+          module: "Obligations",
+          recordId: o.id,
+          recordLabel: `${o.obligationNumber} – ${o.payee}`,
+          details: `Obligation ${h.status.toLowerCase()} (${peso(o.amount)}).`,
+          ipAddress: ip(),
+        }),
+      ),
+  )
+  disbursements.forEach((d) =>
+    d.history
+      .filter((h) => recent(h.at.slice(0, 10)) && ["Approved", "Released", "For Review"].includes(h.status))
+      .forEach((h) =>
+        logs.push({
+          timestamp: h.at,
+          userId: h.byUserId ?? "usr-004",
+          action: h.status === "Released" ? "Released" : h.status === "Approved" ? "Approved" : "Submitted",
+          module: "Disbursements",
+          recordId: d.id,
+          recordLabel: `${d.disbursementNumber} – ${d.payee}`,
+          details: `Disbursement ${h.status.toLowerCase()} (${peso(d.amount)}).${h.status === "Released" && d.referenceNumber ? " " + d.referenceNumber + "." : ""}`,
+          ipAddress: ip(),
+        }),
+      ),
+  )
+  collections
+    .filter((c) => c.date >= "2026-09-01")
+    .forEach((c) =>
+      logs.push({
+        timestamp: c.createdAt,
+        userId: c.collectorId,
+        action: "Recorded",
+        module: "Collections",
+        recordId: c.id,
+        recordLabel: `${c.orNumber} – ${c.payerName}`,
+        details: `${c.type}: ${peso(c.amount)} via ${c.paymentMethod}.`,
+        ipAddress: ip(),
+      }),
+    )
+  projects.forEach((p) =>
+    p.history
+      .filter((h) => recent(h.at.slice(0, 10)))
+      .forEach((h) =>
+        logs.push({
+          timestamp: h.at,
+          userId: h.byUserId ?? "usr-005",
+          action: h.status === "Approved" ? "Approved" : "Status Changed",
+          module: "Projects",
+          recordId: p.id,
+          recordLabel: `${p.code} – ${p.name}`,
+          details: `Project moved to ${h.status}.${h.note ? " " + h.note : ""}`,
+          ipAddress: ip(),
+        }),
+      ),
+  )
+  ;[
+    ...ordinances.map((o) => ({ r: o, num: o.ordinanceNumber, mod: "Ordinances" as const })),
+    ...resolutions.map((r) => ({ r, num: r.resolutionNumber, mod: "Resolutions" as const })),
+  ].forEach(({ r, num, mod }) =>
+    r.history
+      .filter((h) => h.at >= "2026-01-01" && ["Approved", "Rejected", "Effective"].includes(h.status))
+      .forEach((h) =>
+        logs.push({
+          timestamp: h.at,
+          userId: h.byUserId ?? "usr-003",
+          action: h.status === "Approved" ? "Approved" : h.status === "Rejected" ? "Rejected" : "Status Changed",
+          module: mod,
+          recordId: r.id,
+          recordLabel: num,
+          details: `${num} ${h.status.toLowerCase()}: ${r.title}.`,
+          ipAddress: ip(),
+        }),
+      ),
+  )
+  assets
+    .filter((a) => a.acquisitionDate >= "2026-01-01")
+    .forEach((a) =>
+      logs.push({
+        timestamp: `${a.acquisitionDate}T11:00:00+08:00`,
+        userId: "usr-004",
+        action: "Assigned",
+        module: "Assets",
+        recordId: a.id,
+        recordLabel: `${a.assetNumber} – ${a.name}`,
+        details: `Registered and assigned to custodian at ${a.location}.`,
+        ipAddress: ip(),
+      }),
+    )
+  inventoryTransactions
+    .filter((t) => t.date >= "2026-09-01" || t.date === "2026-07-24")
+    .forEach((t) => {
+      const item = inventoryItems.find((i) => i.id === t.itemId)
+      logs.push({
+        timestamp: `${t.date}T13:00:00+08:00`,
+        userId: t.byUserId,
+        action: t.type === "Stock Out" ? "Stock Out" : t.type === "Stock In" ? "Stock In" : "Adjusted",
+        module: "Inventory",
+        recordId: t.itemId,
+        recordLabel: `${item?.code} – ${item?.name}`,
+        details: `${t.type}: ${t.quantity} ${item?.unit}${t.issuedTo ? ` to ${t.issuedTo}` : ""}.`,
+        ipAddress: ip(),
+      })
+    })
 
   return logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp)).map((l, i) => ({ ...l, id: `log-${pad(logs.length - i, 5)}` }))
 }

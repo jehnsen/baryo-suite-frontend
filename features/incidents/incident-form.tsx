@@ -96,7 +96,13 @@ export function IncidentFormFields({
 
       <SectionCard>
         <FormSection title="Description" description="Supports Markdown — headings, lists, bold text and links." columns={1}>
-          <MarkdownField name="description" label="Description" required rows={8} placeholder="What happened? Include relevant details such as sequence of events, damages, or injuries." />
+          <MarkdownField
+            name="description"
+            label="Description"
+            required
+            rows={8}
+            placeholder="What happened? Include relevant details such as sequence of events, damages, or injuries."
+          />
         </FormSection>
       </SectionCard>
 

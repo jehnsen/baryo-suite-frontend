@@ -22,9 +22,9 @@ export function SidebarFooterInfo() {
 export function AppSidebar() {
   const settings = useSettings()
   return (
-    <aside className="app-sidebar no-print sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <div className="flex h-24 shrink-0 items-center px-6">
-        <Brand subtitle={`BARANGAY ${settings.barangayName.toUpperCase()}`} />
+    <aside className="no-print sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar lg:flex">
+      <div className="flex h-14 items-center border-b px-4">
+        <Brand subtitle={`Brgy. ${settings.barangayName}, ${settings.municipality}`} />
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         <SidebarNav />

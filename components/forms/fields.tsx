@@ -138,10 +138,7 @@ export function MarkdownField({
           />
         </TabsContent>
         <TabsContent value="preview">
-          <div
-            className="min-h-16 w-full rounded-lg border border-input px-3 py-2 text-sm"
-            style={{ minHeight: `calc(${rows} * 1.5em + 1.25rem)` }}
-          >
+          <div className="min-h-16 w-full rounded-lg border border-input px-3 py-2 text-sm" style={{ minHeight: `calc(${rows} * 1.5em + 1.25rem)` }}>
             {value.trim() ? (
               <ReactMarkdown components={markdownPreviewComponents}>{value}</ReactMarkdown>
             ) : (

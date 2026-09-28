@@ -1,10 +1,18 @@
 "use client"
 
 import type { TooltipContentProps } from "recharts"
-import { formatNumber } from "@/lib/format"
+import { formatNumber, formatPeso, formatPesoCompact } from "@/lib/format"
+
+export type ValueFormat = "number" | "peso" | "percent"
+
+/** Full value for tooltips. */
+export const formatValue = (v: number, f: ValueFormat = "number") => (f === "peso" ? formatPeso(v) : f === "percent" ? `${v.toFixed(1)}%` : formatNumber(v))
+/** Short value for axes and bar labels. */
+export const formatTick = (v: number, f: ValueFormat = "number") =>
+  f === "peso" ? formatPesoCompact(v) : f === "percent" ? `${Math.round(v)}%` : formatNumber(v)
 
 /** Shared tooltip body: label + one row per series with a color key. */
-export function ChartTooltip({ active, payload, label, unit }: Partial<TooltipContentProps> & { unit?: string }) {
+export function ChartTooltip({ active, payload, label, unit, valueFormat }: Partial<TooltipContentProps> & { unit?: string; valueFormat?: ValueFormat }) {
   if (!active || !payload?.length) return null
   return (
     <div className="min-w-32 rounded-lg border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
@@ -17,7 +25,7 @@ export function ChartTooltip({ active, payload, label, unit }: Partial<TooltipCo
               {p.name}
             </span>
             <span className="font-medium tabular-nums">
-              {formatNumber(Number(p.value))}
+              {formatValue(Number(p.value), valueFormat)}
               {unit ? ` ${unit}` : ""}
             </span>
           </li>

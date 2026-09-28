@@ -3,7 +3,7 @@ import {
   Boxes,
   CalendarDays,
   ClipboardList,
-  FileSignature,
+  FilePen,
   FolderKanban,
   HandCoins,
   Landmark,
@@ -13,7 +13,6 @@ import {
   Receipt,
   ScrollText,
   UsersRound,
-  Wallet,
   BellRing,
   CheckCircle2,
   FileBadge,
@@ -49,7 +48,7 @@ export const MODULE_ICONS: Record<AuditModule, LucideIcon> = {
   "Fund Sources": Landmark,
   PPAs: ClipboardList,
   Collections: HandCoins,
-  Obligations: FileSignature,
+  Obligations: FilePen,
   Disbursements: Banknote,
   Expenses: Receipt,
   Sessions: CalendarDays,
@@ -63,7 +62,7 @@ export const MODULE_ICONS: Record<AuditModule, LucideIcon> = {
   Inventory: Boxes,
 }
 
-const ACTION_TONES: Partial<Record<AuditAction, Tone>> = {
+export const ACTION_TONES: Partial<Record<AuditAction, Tone>> = {
   Created: "info",
   Approved: "success",
   Issued: "success",

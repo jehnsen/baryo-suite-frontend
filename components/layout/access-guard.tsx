@@ -6,14 +6,14 @@ import { Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/shared/empty-state"
 import { useCurrentUser } from "@/hooks/use-data"
-import { moduleForPath } from "@/lib/navigation"
+import { accessForPath } from "@/lib/navigation"
 
 /** Client-side mock RBAC: blocks routes the current role cannot access. */
 export function AccessGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { role, canAccess } = useCurrentUser()
-  const nav = moduleForPath(pathname)
-  if (nav && !canAccess(nav.module)) {
+  const nav = accessForPath(pathname)
+  if (nav && !nav.modules.some(canAccess)) {
     return (
       <EmptyState
         icon={Lock}

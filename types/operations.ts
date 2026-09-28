@@ -39,15 +39,7 @@ export interface Project {
 }
 
 export type AssetCategory =
-  | "IT Equipment"
-  | "Office Equipment"
-  | "Communication"
-  | "Security"
-  | "Furniture"
-  | "Power"
-  | "Vehicle"
-  | "Rescue Equipment"
-  | "Medical Equipment"
+  "IT Equipment" | "Office Equipment" | "Communication" | "Security" | "Furniture" | "Power" | "Vehicle" | "Rescue Equipment" | "Medical Equipment"
 
 export type AssetCondition = "Excellent" | "Good" | "Fair" | "Poor" | "For Repair" | "Unserviceable"
 export type AssetStatus = "Active" | "In Storage" | "Under Maintenance" | "Disposed"
