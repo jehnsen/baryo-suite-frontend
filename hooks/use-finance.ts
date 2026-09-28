@@ -1,12 +1,12 @@
 "use client"
 
 import { useMemo } from "react"
-import type { PPA } from "@/types"
 import { buildLedger, utilizationStatus, type BudgetMetrics } from "@/lib/finance"
 import { useAppStore } from "@/lib/store/app-store"
 import { sessionActions } from "@/lib/store/actions"
 import { useAllocations, useBudgets, useCurrentUser, useDisbursements, useObligations, usePPAs, useProjects, useSettings } from "./use-data"
 import { SCOPED_TO_ASSIGNMENTS } from "@/lib/permissions"
+import { buildAssignmentScope } from "@/lib/scope"
 
 /** Memoized budget ledger (obligated/disbursed/available derived from records). */
 export function useLedger() {
@@ -39,22 +39,10 @@ export function useUtilizationStatus() {
 export function useAssignmentScope() {
   const { role, officialId } = useCurrentUser()
   const committees = useAppStore((s) => s.committees)
+  const ppas = usePPAs()
   const projects = useProjects()
-  const scoped = SCOPED_TO_ASSIGNMENTS.includes(role)
-  return useMemo(() => {
-    const myCommittees = new Set(
-      committees
-        .filter((c) => officialId && (c.chairpersonId === officialId || c.viceChairId === officialId || c.memberIds.includes(officialId)))
-        .map((c) => c.id),
-    )
-    const ppaVisible = (p: PPA) => !scoped || p.responsibleOfficialId === officialId || (p.committeeId !== undefined && myCommittees.has(p.committeeId))
-    return {
-      scoped,
-      myCommittees,
-      ppaVisible,
-      projectVisible: (projectPpa: PPA | undefined, responsibleOfficialId: string) =>
-        !scoped || responsibleOfficialId === officialId || (projectPpa ? ppaVisible(projectPpa) : false),
-      projects,
-    }
-  }, [scoped, officialId, committees, projects])
+  return useMemo(
+    () => ({ ...buildAssignmentScope({ scoped: SCOPED_TO_ASSIGNMENTS.includes(role), officialId, committees, ppas }), projects }),
+    [role, officialId, committees, ppas, projects],
+  )
 }

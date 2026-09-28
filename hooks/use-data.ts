@@ -38,6 +38,8 @@ export const useProjects = () => useAppStore((s) => s.projects)
 export const useAssets = () => useAppStore((s) => s.assets)
 export const useInventoryItems = () => useAppStore((s) => s.inventoryItems)
 export const useInventoryTransactions = () => useAppStore((s) => s.inventoryTransactions)
+// Phase 3
+export const useReportRuns = () => useAppStore((s) => s.reportRuns)
 
 function useIndex<T extends { id: string }>(items: T[]) {
   return useMemo(() => new Map(items.map((i) => [i.id, i])), [items])

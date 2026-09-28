@@ -1,8 +1,6 @@
-import type { Metadata } from "next"
-import { ReportsView } from "@/features/finance/reports-view"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = { title: "Financial Reports" }
-
+/** Financial reports moved into the shared Reports module (Phase 3). */
 export default function Page() {
-  return <ReportsView />
+  redirect("/reports/finance")
 }

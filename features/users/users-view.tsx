@@ -22,10 +22,15 @@ import { usePageLoad } from "@/hooks/use-page-load"
 import { ROLES, USER_STATUSES, toOptions } from "@/lib/constants"
 import { formatRelative } from "@/lib/format"
 import { ALL_NAV_ITEMS } from "@/lib/navigation"
+import { REPORT_SECTIONS } from "@/lib/reports/sections"
 import { ROLE_DESCRIPTIONS, ROLE_MODULES, hasCapability } from "@/lib/permissions"
 import { simulateLatency, userActions } from "@/lib/store/actions"
 
 const col = createAppColumnHelper<User>()
+
+// Report sections collapse into one "Reports" column (sections per role).
+const MODULE_COLUMNS = ALL_NAV_ITEMS.filter((m) => !m.module.startsWith("reports"))
+const REPORT_SECTION_COUNT = REPORT_SECTIONS.length
 
 function PermissionsMatrix() {
   return (
@@ -35,11 +40,12 @@ function PermissionsMatrix() {
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="sticky left-0 z-10 bg-card pl-4 text-xs">Role</TableHead>
-              {ALL_NAV_ITEMS.map((m) => (
+              {MODULE_COLUMNS.map((m) => (
                 <TableHead key={m.module} className="text-center text-xs whitespace-nowrap">
                   {m.title}
                 </TableHead>
               ))}
+              <TableHead className="text-center text-xs whitespace-nowrap">Report sections</TableHead>
               <TableHead className="text-center text-xs">Approve</TableHead>
             </TableRow>
           </TableHeader>
@@ -50,7 +56,7 @@ function PermissionsMatrix() {
                   <p className="font-medium whitespace-nowrap">{role}</p>
                   <p className="max-w-56 text-xs whitespace-normal text-muted-foreground">{ROLE_DESCRIPTIONS[role]}</p>
                 </TableCell>
-                {ALL_NAV_ITEMS.map((m) => (
+                {MODULE_COLUMNS.map((m) => (
                   <TableCell key={m.module} className="text-center">
                     {ROLE_MODULES[role].includes(m.module) ? (
                       <Check className="mx-auto size-4 text-[var(--tone-success)]" aria-label="Allowed" />
@@ -59,6 +65,9 @@ function PermissionsMatrix() {
                     )}
                   </TableCell>
                 ))}
+                <TableCell className="text-center text-xs text-muted-foreground tabular-nums">
+                  {REPORT_SECTIONS.filter((s) => ROLE_MODULES[role].includes(s.module)).length} / {REPORT_SECTION_COUNT}
+                </TableCell>
                 <TableCell className="text-center">
                   {hasCapability(role, "approve") ? (
                     <Check className="mx-auto size-4 text-[var(--tone-success)]" aria-label="Can approve" />

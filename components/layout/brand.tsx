@@ -1,11 +1,11 @@
+import Image from "next/image"
 import Link from "next/link"
-import { Landmark } from "lucide-react"
 
 export function Brand({ subtitle }: { subtitle?: string }) {
   return (
     <Link href="/dashboard" className="flex min-w-0 items-center gap-3 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/50">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm">
-        <Landmark className="size-5" strokeWidth={1.7} />
+      <span className="size-10 shrink-0 overflow-hidden rounded-xl shadow-sm">
+        <Image src="/logo/brgy-busilac-logo.jpeg" alt="Barangay Busilac logo" width={40} height={40} className="size-10 object-cover" priority />
       </span>
       <span className="min-w-0 leading-tight">
         <span className="block text-xl font-semibold tracking-tight text-sidebar-foreground">

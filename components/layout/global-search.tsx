@@ -207,7 +207,7 @@ export function GlobalSearch() {
               <CommandGroup heading="Go to">
                 {pages.map((p) => (
                   <CommandItem key={p.href} onSelect={() => go(p.href)}>
-                    <p.icon /> {p.title}
+                    <p.icon /> {p.fullTitle ?? p.title}
                   </CommandItem>
                 ))}
               </CommandGroup>

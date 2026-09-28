@@ -30,12 +30,17 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import type { ModuleKey } from "@/types"
+import { REPORT_SECTIONS } from "@/lib/reports/sections"
 
 export interface NavItem {
   title: string
   href: string
   icon: LucideIcon
   module: ModuleKey
+  /** Other route prefixes that belong to this item (e.g. /reports/households). */
+  aliases?: string[]
+  /** Unambiguous title outside the sidebar (search, access messages), e.g. "Finance reports". */
+  fullTitle?: string
 }
 
 export interface NavGroup {
@@ -90,7 +95,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { title: "Obligations", href: "/finance/obligations", icon: FilePen, module: "obligations" },
       { title: "Disbursements", href: "/finance/disbursements", icon: Banknote, module: "disbursements" },
       { title: "Expenses", href: "/finance/expenses", icon: Receipt, module: "expenses" },
-      { title: "Financial Reports", href: "/finance/reports", icon: ChartColumn, module: "financial-reports" },
     ],
   },
   {
@@ -110,6 +114,20 @@ export const NAV_GROUPS: NavGroup[] = [
       { title: "Programs & Projects", href: "/projects", icon: FolderKanban, module: "projects" },
       { title: "Assets", href: "/assets", icon: Monitor, module: "assets" },
       { title: "Inventory", href: "/inventory", icon: Boxes, module: "inventory" },
+    ],
+  },
+  {
+    label: "Reports",
+    items: [
+      { title: "Overview", fullTitle: "Reports overview", href: "/reports", icon: ChartColumn, module: "reports" },
+      ...REPORT_SECTIONS.map((s) => ({
+        title: s.title,
+        fullTitle: `${s.title} reports`,
+        href: `/reports/${s.slugs[0].slug}`,
+        aliases: s.slugs.slice(1).map((x) => `/reports/${x.slug}`),
+        icon: s.icon,
+        module: s.module,
+      })),
     ],
   },
   {
@@ -138,10 +156,23 @@ export interface RouteAccess {
   modules: ModuleKey[]
 }
 
-/** Resolve which module(s) a pathname belongs to (longest prefix wins). */
+const matches = (pathname: string, prefix: string) => pathname === prefix || pathname.startsWith(prefix + "/")
+
+/** The single sidebar item a pathname belongs to: the longest matching href or alias wins (/finance vs /finance/allocations). */
+export function activeNavItem(pathname: string): NavItem | undefined {
+  let best: { item: NavItem; length: number } | undefined
+  for (const item of ALL_NAV_ITEMS) {
+    for (const prefix of [item.href, ...(item.aliases ?? [])]) {
+      if (matches(pathname, prefix) && (!best || prefix.length > best.length)) best = { item, length: prefix.length }
+    }
+  }
+  return best?.item
+}
+
+/** Resolve which module(s) a pathname belongs to. */
 export function accessForPath(pathname: string): RouteAccess | undefined {
-  const extra = EXTRA_ROUTES.find((r) => pathname === r.prefix || pathname.startsWith(r.prefix + "/"))
+  const extra = EXTRA_ROUTES.find((r) => matches(pathname, r.prefix))
   if (extra) return extra
-  const item = ALL_NAV_ITEMS.filter((i) => pathname === i.href || pathname.startsWith(i.href + "/")).sort((a, b) => b.href.length - a.href.length)[0]
-  return item ? { title: item.title, modules: [item.module] } : undefined
+  const item = activeNavItem(pathname)
+  return item ? { title: item.fullTitle ?? item.title, modules: [item.module] } : undefined
 }

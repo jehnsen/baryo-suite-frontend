@@ -5,6 +5,8 @@
  * timestamps) so records stay serializable and map 1:1 to future API payloads.
  */
 
+import type { ReportSectionId } from "./reports"
+
 export type ID = string
 
 /* -------------------------------------------------------------------------- */
@@ -336,7 +338,6 @@ export type ModuleKey =
   | "obligations"
   | "disbursements"
   | "expenses"
-  | "financial-reports"
   // Phase 2 — Governance
   | "sessions"
   | "ordinances"
@@ -348,6 +349,9 @@ export type ModuleKey =
   | "projects"
   | "assets"
   | "inventory"
+  // Phase 3 — Reports (overview + one key per report section)
+  | "reports"
+  | `reports-${ReportSectionId}`
 
 export type UserStatus = "Active" | "Invited" | "Suspended"
 
@@ -395,6 +399,8 @@ export type AuditModule =
   | "Projects"
   | "Assets"
   | "Inventory"
+  // Phase 3
+  | "Reports"
 
 export type AuditAction =
   | "Created"
@@ -420,6 +426,9 @@ export type AuditAction =
   | "Stock In"
   | "Stock Out"
   | "Adjusted"
+  // Phase 3
+  | "Printed"
+  | "Exported"
 
 export interface AuditLog {
   id: ID
@@ -472,3 +481,4 @@ export interface BarangaySettings {
 export * from "./finance"
 export * from "./governance"
 export * from "./operations"
+export * from "./reports"

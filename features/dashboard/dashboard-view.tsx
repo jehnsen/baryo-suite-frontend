@@ -8,6 +8,7 @@ import {
   ArrowRight,
   CalendarDays,
   CalendarClock,
+  ChartColumn,
   FileBadge,
   FileCheck,
   FileClock,
@@ -97,6 +98,13 @@ export function DashboardView() {
               <Button asChild variant="outline" className="border-primary/15 bg-card/75">
                 <Link href="/requests">
                   View requests <ArrowRight />
+                </Link>
+              </Button>
+            )}
+            {canAccess("reports") && (
+              <Button asChild variant="outline" className="border-primary/15 bg-card/75">
+                <Link href="/reports">
+                  <ChartColumn /> Reports
                 </Link>
               </Button>
             )}

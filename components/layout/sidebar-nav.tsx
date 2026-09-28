@@ -4,7 +4,7 @@ import Link from "next/link"
 import { ChevronDown } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { usePathname } from "next/navigation"
-import { ALL_NAV_ITEMS, NAV_GROUPS } from "@/lib/navigation"
+import { NAV_GROUPS, activeNavItem } from "@/lib/navigation"
 import { useCurrentUser, useServiceRequests, useBlotters } from "@/hooks/use-data"
 import { cn } from "@/lib/utils"
 
@@ -12,8 +12,7 @@ import { cn } from "@/lib/utils"
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   // Only the most specific matching item is active (/finance vs /finance/allocations).
-  const activeHref = ALL_NAV_ITEMS.filter((i) => pathname === i.href || pathname.startsWith(i.href + "/")).sort((a, b) => b.href.length - a.href.length)[0]
-    ?.href
+  const activeHref = activeNavItem(pathname)?.href
   const { canAccess } = useCurrentUser()
   const requests = useServiceRequests()
   const blotters = useBlotters()

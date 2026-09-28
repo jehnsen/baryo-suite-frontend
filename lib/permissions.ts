@@ -1,4 +1,4 @@
-import type { ModuleKey, Role } from "@/types"
+import type { ModuleKey, ReportSectionId, Role } from "@/types"
 
 /**
  * Mock role-based access. When real auth lands, the server returns the same
@@ -19,20 +19,11 @@ const PHASE1_MODULES: ModuleKey[] = [
   "settings",
 ]
 
-const FINANCE_MODULES: ModuleKey[] = [
-  "finance-dashboard",
-  "budget",
-  "allocations",
-  "collections",
-  "obligations",
-  "disbursements",
-  "expenses",
-  "financial-reports",
-]
+const FINANCE_MODULES: ModuleKey[] = ["finance-dashboard", "budget", "allocations", "collections", "obligations", "disbursements", "expenses"]
 const GOVERNANCE_MODULES: ModuleKey[] = ["sessions", "ordinances", "resolutions", "committees", "minutes", "assemblies"]
 const OPERATIONS_MODULES: ModuleKey[] = ["projects", "assets", "inventory"]
 
-export const ROLE_MODULES: Record<Role, ModuleKey[]> = {
+const OPERATIONAL_MODULES: Record<Role, ModuleKey[]> = {
   Administrator: [...PHASE1_MODULES, ...FINANCE_MODULES, ...GOVERNANCE_MODULES, ...OPERATIONS_MODULES],
   "Punong Barangay": [
     "dashboard",
@@ -71,6 +62,56 @@ export const ROLE_MODULES: Record<Role, ModuleKey[]> = {
   Viewer: ["dashboard", "officials", "announcements"],
 }
 
+/* -------------------------------------------------------------------------- */
+/* Reports (Phase 3)                                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Each report carries access tags (by default its section). A role sees a
+ * report when it holds any of the report's tags.
+ *
+ *  project-financial – project budget/financial progress (Treasurer)
+ *  public            – summaries open under the full disclosure policy
+ *                      (budget summaries, legislation registers, assemblies)
+ */
+export type ReportTag = ReportSectionId | "project-financial" | "public"
+
+const ALL_SECTIONS: ReportSectionId[] = ["residents", "services", "peace-order", "governance", "finance", "projects", "assets"]
+
+export const ROLE_REPORT_TAGS: Record<Role, ReportTag[]> = {
+  Administrator: ALL_SECTIONS,
+  "Punong Barangay": ALL_SECTIONS,
+  Secretary: ["residents", "services", "governance", "public"],
+  Treasurer: ["finance", "assets", "project-financial"],
+  // Committee and project reports; project and committee rows are scoped to the Kagawad's assignments.
+  Kagawad: ["governance", "projects", "public"],
+  Tanod: ["peace-order"],
+  Encoder: ["residents", "services"],
+  Viewer: ["public"],
+}
+
+/** Tags that can occur in each section (a section is listed when the role holds any of them). */
+const REPORT_SECTION_TAGS: Record<ReportSectionId, ReportTag[]> = {
+  residents: ["residents"],
+  services: ["services"],
+  "peace-order": ["peace-order"],
+  governance: ["governance", "public"],
+  finance: ["finance", "public"],
+  projects: ["projects", "project-financial"],
+  assets: ["assets"],
+}
+
+export const canViewReport = (role: Role, tags: ReportTag[]) => tags.some((t) => ROLE_REPORT_TAGS[role].includes(t))
+
+const reportModules = (role: Role): ModuleKey[] => {
+  const sections = ALL_SECTIONS.filter((s) => canViewReport(role, REPORT_SECTION_TAGS[s]))
+  return sections.length ? ["reports", ...sections.map((s) => `reports-${s}` as const)] : []
+}
+
+export const ROLE_MODULES = Object.fromEntries(
+  (Object.keys(OPERATIONAL_MODULES) as Role[]).map((role) => [role, [...OPERATIONAL_MODULES[role], ...reportModules(role)]]),
+) as Record<Role, ModuleKey[]>
+
 /**
  * write           – create/edit Phase 1 records
  * approve         – approve certificates, requests and legislation
@@ -103,7 +144,7 @@ export const ROLE_DESCRIPTIONS: Record<Role, string> = {
   Administrator: "Full access to every module, users and system settings.",
   "Punong Barangay": "Executive oversight: approves documents, budgets, obligations, disbursements and projects.",
   Secretary: "Residents, certificates and requests; records sessions, minutes and legislation.",
-  Treasurer: "Budget, collections, obligations, disbursements, expenses, reports, assets and inventory.",
+  Treasurer: "Budget, collections, obligations, disbursements, expenses, assets and inventory, with finance and asset reports.",
   Kagawad: "Committee work, assigned PPAs and projects, sessions and legislation.",
   Tanod: "Peace and order: blotter and incident records.",
   Encoder: "Data entry for residents, households and requests.",

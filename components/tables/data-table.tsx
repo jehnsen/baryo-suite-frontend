@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { EmptyState } from "@/components/shared/empty-state"
 import { ErrorState } from "@/components/shared/error-state"
 import { FilterBar, type FilterConfig, type FilterValues } from "@/components/shared/filter-bar"
@@ -23,6 +23,7 @@ import { Pagination } from "@/components/shared/pagination"
 import { SearchInput } from "@/components/shared/search-input"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
 import type { LoadStatus } from "@/hooks/use-page-load"
+import { EXPORT_LABELS, exportReport, type ExportFormat } from "@/lib/reports/export"
 import { cn } from "@/lib/utils"
 import { appTableFeatures, type AppColumnDef } from "./table-features"
 
@@ -49,9 +50,22 @@ export interface DataTableProps<TData extends RowData> {
   initialSorting?: SortingState
   initialVisibility?: ColumnVisibilityState
   pageSize?: number
-  /** Show the export menu (placeholder until the reporting API exists). */
+  /** Show the export menu (CSV of the filtered, sorted rows; Excel/PDF are placeholders). */
   exportable?: boolean
+  /** Base filename for exports (date is appended). */
+  exportFilename?: string
+  /** Render column `footer`s (totals) below the rows. */
+  showFooter?: boolean
   className?: string
+}
+
+/** Flatten an accessor value into a CSV cell. */
+function toCell(v: unknown): string | number | undefined {
+  if (v === null || v === undefined) return undefined
+  if (typeof v === "number" || typeof v === "string") return v
+  if (typeof v === "boolean") return v ? "Yes" : "No"
+  if (Array.isArray(v)) return v.filter((x) => typeof x === "string" || typeof x === "number").join("; ")
+  return undefined
 }
 
 const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
@@ -72,6 +86,8 @@ export function DataTable<TData extends RowData>({
   initialVisibility = {},
   pageSize = 10,
   exportable = true,
+  exportFilename = "export",
+  showFooter,
   className,
 }: DataTableProps<TData>) {
   const [query, setQuery] = useState("")
@@ -126,18 +142,36 @@ export function DataTable<TData extends RowData>({
   })
 
   const hidableColumns = table.getAllLeafColumns().filter((c) => c.getCanHide())
+  const hasToolbar = Boolean(search || filterConfigs.length || dateFilter || toolbarActions || exportable)
   const isFiltered = query.length > 0 || Object.values(filterValues).some((v) => v.length) || Boolean(dateRange.from)
   const rows = table.getRowModel().rows
 
-  const exportPlaceholder = (format: string) =>
-    toast.info(`${format} export queued`, {
-      description: `${filtered.length} records will be exported once the reporting service is connected.`,
-    })
+  const handleExport = (format: ExportFormat) => {
+    // Visible data columns only; display-only columns (actions, avatars) have no accessor.
+    const columns = table
+      .getVisibleLeafColumns()
+      .filter((c) => c.accessorFn)
+      .map((c) => ({
+        header: c.columnDef.meta?.label ?? (typeof c.columnDef.header === "string" ? c.columnDef.header : c.id),
+        value: (row: (typeof rows)[number]) => toCell(row.getValue(c.id)),
+      }))
+    const result = exportReport({ format, filename: exportFilename, columns, rows: table.getPrePaginatedRowModel().rows })
+    if (result.status === "downloaded") toast.success(`Exported ${result.rowCount} records`, { description: result.filename })
+    else
+      toast.info(`${EXPORT_LABELS[format]} export queued`, {
+        description: `${result.rowCount} records will be exported once the reporting service is connected. CSV is available now.`,
+      })
+  }
 
   return (
     <div className={cn("min-w-0 space-y-4", className)}>
-      {/* Toolbar */}
-      <div className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-xs lg:flex-row lg:items-start lg:justify-between">
+      {/* Toolbar (only the column menu when there is nothing to search, filter or export) */}
+      <div
+        className={cn(
+          "flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between",
+          hasToolbar ? "rounded-xl border border-border/80 bg-card p-4 shadow-xs" : "items-end lg:items-start",
+        )}
+      >
         <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           {search && (
             <SearchInput
@@ -205,13 +239,13 @@ export function DataTable<TData extends RowData>({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => exportPlaceholder("CSV")}>
+                <DropdownMenuItem onSelect={() => handleExport("csv")}>
                   <FileText /> Export as CSV
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => exportPlaceholder("Excel")}>
+                <DropdownMenuItem onSelect={() => handleExport("excel")}>
                   <FileSpreadsheet /> Export as Excel
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => exportPlaceholder("PDF")}>
+                <DropdownMenuItem onSelect={() => handleExport("pdf")}>
                   <FileText /> Export as PDF
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -286,6 +320,19 @@ export function DataTable<TData extends RowData>({
                   ))
                 )}
               </TableBody>
+              {showFooter && rows.length > 0 && (
+                <TableFooter className="bg-muted/40">
+                  {table.getFooterGroups().map((group) => (
+                    <TableRow key={group.id} className="hover:bg-transparent">
+                      {group.headers.map((header) => (
+                        <TableCell key={header.id} className={cn("py-3 font-semibold", header.column.columnDef.meta?.className)}>
+                          {header.isPlaceholder ? null : <table.FlexRender footer={header} />}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableFooter>
+              )}
             </Table>
           </div>
           <Pagination

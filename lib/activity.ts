@@ -1,6 +1,7 @@
 import {
   Banknote,
   Boxes,
+  ChartColumn,
   CalendarDays,
   ClipboardList,
   FilePen,
@@ -60,6 +61,7 @@ export const MODULE_ICONS: Record<AuditModule, LucideIcon> = {
   Projects: FolderKanban,
   Assets: Monitor,
   Inventory: Boxes,
+  Reports: ChartColumn,
 }
 
 export const ACTION_TONES: Partial<Record<AuditAction, Tone>> = {
@@ -83,6 +85,8 @@ export const ACTION_TONES: Partial<Record<AuditAction, Tone>> = {
   "Stock In": "success",
   "Stock Out": "info",
   Adjusted: "warning",
+  Printed: "neutral",
+  Exported: "purple",
 }
 
 const ACTION_VERBS: Record<AuditAction, string> = {
@@ -108,6 +112,8 @@ const ACTION_VERBS: Record<AuditAction, string> = {
   "Stock In": "stocked in",
   "Stock Out": "issued stock of",
   Adjusted: "adjusted stock of",
+  Printed: "printed",
+  Exported: "exported",
 }
 
 /** Deep link for an audit record, when the module has a detail route. */
@@ -158,6 +164,8 @@ export function recordHref(module: AuditModule, recordId?: string): string | und
       return `/assets/${recordId}`
     case "Inventory":
       return `/inventory?open=${recordId}`
+    case "Reports":
+      return `/reports?report=${recordId}`
     default:
       return undefined
   }

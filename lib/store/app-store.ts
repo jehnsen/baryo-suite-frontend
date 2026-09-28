@@ -25,6 +25,7 @@ import type {
   Certificate,
   Household,
   Incident,
+  ReportRun,
   Resident,
   ServiceRequest,
   User,
@@ -65,6 +66,8 @@ export interface AppState {
   assets: Asset[]
   inventoryItems: InventoryItem[]
   inventoryTransactions: InventoryTransaction[]
+  // Phase 3 — printed/exported report history (reports themselves are derived)
+  reportRuns: ReportRun[]
   /** fiscalYear is the finance context shared by every finance screen. */
   session: { currentUserId: string; fiscalYear: number }
 }
@@ -99,6 +102,7 @@ export const appStore = createStore<AppState>({
   assets: mock.assets,
   inventoryItems: mock.inventoryItems,
   inventoryTransactions: mock.inventoryTransactions,
+  reportRuns: mock.reportRuns,
   session: { currentUserId: "usr-001", fiscalYear: 2026 },
 })
 
