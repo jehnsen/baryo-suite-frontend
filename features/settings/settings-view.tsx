@@ -38,6 +38,7 @@ const profileSchema = z.object({
   email: optionalEmail,
   logo: z.array(z.object({ id: z.string(), name: z.string(), size: z.number(), type: z.string() })),
   seal: z.array(z.object({ id: z.string(), name: z.string(), size: z.number(), type: z.string() })),
+  municipalityLogo: z.array(z.object({ id: z.string(), name: z.string(), size: z.number(), type: z.string() })),
 })
 
 function SaveBar({ pending, dirty }: { pending: boolean; dirty: boolean }) {
@@ -63,11 +64,12 @@ function ProfileForm({ settings }: { settings: BarangaySettings }) {
     email: settings.email,
     logo: [],
     seal: [],
+    municipalityLogo: [],
   }
   const form = useForm({ resolver: zodResolver(profileSchema), defaultValues: defaults, mode: "onTouched" })
   const onSubmit = async (v: z.output<typeof profileSchema>) => {
     await simulateLatency()
-    const { logo: _logo, seal: _seal, ...rest } = v
+    const { logo: _logo, seal: _seal, municipalityLogo: _municipalityLogo, ...rest } = v
     settingsActions.update(rest, "Barangay profile")
     form.reset(v)
     toast.success("Barangay profile saved", { description: "Certificates will use the updated letterhead." })
@@ -88,6 +90,7 @@ function ProfileForm({ settings }: { settings: BarangaySettings }) {
         <FormSection title="Branding">
           <FileField name="logo" label="Barangay logo" accept="image/*" multiple={false} description="Square PNG, at least 300×300 px." />
           <FileField name="seal" label="Barangay seal" accept="image/*" multiple={false} description="Transparent PNG preferred." />
+          <FileField name="municipalityLogo" label="Municipality logo" accept="image/*" multiple={false} description="Square PNG, at least 300×300 px." />
         </FormSection>
         <SaveBar pending={form.formState.isSubmitting} dirty={form.formState.isDirty} />
       </FormRoot>

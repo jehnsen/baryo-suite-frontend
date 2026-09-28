@@ -13,7 +13,7 @@ export const CERTIFICATE_FEES: Record<CertificateType, number> = {
   "First Time Job Seeker Certificate": 0,
 }
 
-const STAFF_USERS = ["usr-003", "usr-007", "usr-008"]
+const STAFF_USERS = ["usr-003"]
 const ISSUING_OFFICIALS = ["off-010", "off-010", "off-010", "off-016"]
 
 function build() {

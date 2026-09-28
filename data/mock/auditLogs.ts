@@ -35,7 +35,7 @@ function build(): AuditLog[] {
     .forEach((r) => {
       logs.push({
         timestamp: r.createdAt,
-        userId: rng.pick(["usr-007", "usr-008", "usr-003"]),
+        userId: rng.pick(["usr-003"]),
         action: "Created",
         module: "Residents",
         recordId: r.id,
@@ -50,7 +50,7 @@ function build(): AuditLog[] {
     .forEach((r) => {
       logs.push({
         timestamp: r.updatedAt,
-        userId: rng.pick(["usr-007", "usr-008"]),
+        userId: rng.pick(["usr-003"]),
         action: "Updated",
         module: "Residents",
         recordId: r.id,
@@ -78,7 +78,7 @@ function build(): AuditLog[] {
       else if (c.status === "Approved")
         logs.push({
           timestamp: c.createdAt,
-          userId: "usr-002",
+          userId: "usr-003",
           action: "Approved",
           module: "Certificates",
           recordId: c.id,
@@ -100,7 +100,7 @@ function build(): AuditLog[] {
       else
         logs.push({
           timestamp: c.createdAt,
-          userId: "usr-007",
+          userId: "usr-003",
           action: "Created",
           module: "Certificates",
           recordId: c.id,
@@ -128,7 +128,7 @@ function build(): AuditLog[] {
   blotters.forEach((b) => {
     logs.push({
       timestamp: b.createdAt,
-      userId: "usr-007",
+      userId: "usr-003",
       action: "Created",
       module: "Blotter",
       recordId: b.id,
@@ -139,7 +139,7 @@ function build(): AuditLog[] {
     b.history.slice(1).forEach((h) => {
       logs.push({
         timestamp: h.at,
-        userId: h.byUserId ?? "usr-006",
+        userId: h.byUserId ?? "usr-003",
         action: h.status === "Closed" ? "Closed" : "Status Changed",
         module: "Blotter",
         recordId: b.id,
@@ -153,7 +153,7 @@ function build(): AuditLog[] {
   incidents.forEach((i) => {
     logs.push({
       timestamp: i.createdAt,
-      userId: rng.pick(["usr-006", "usr-010"]),
+      userId: rng.pick(["usr-003"]),
       action: "Created",
       module: "Incidents",
       recordId: i.id,
@@ -198,9 +198,9 @@ function build(): AuditLog[] {
       userId: "usr-001",
       action: "Created",
       module: "Users",
-      recordId: "usr-011",
-      recordLabel: "sk.samonte@brgysanroque.ph",
-      details: "Invited user with role Viewer.",
+      recordId: "usr-003",
+      recordLabel: "secretary@brgysanroque.ph",
+      details: "Role set to Secretary; access limited to secretary modules.",
       ipAddress: ip(),
     },
     {
@@ -208,9 +208,9 @@ function build(): AuditLog[] {
       userId: "usr-001",
       action: "Updated",
       module: "Users",
-      recordId: "usr-012",
-      recordLabel: "tanod.carpio@brgysanroque.ph",
-      details: "Status changed from Active to Suspended.",
+      recordId: "usr-004",
+      recordLabel: "treasurer@brgysanroque.ph",
+      details: "Role set to Treasurer; access limited to treasurer modules.",
       ipAddress: ip(),
     },
     {
@@ -296,7 +296,7 @@ function build(): AuditLog[] {
       .forEach((h) =>
         logs.push({
           timestamp: h.at,
-          userId: h.byUserId ?? "usr-005",
+          userId: h.byUserId ?? "usr-003",
           action: h.status === "Approved" ? "Approved" : "Status Changed",
           module: "Projects",
           recordId: p.id,

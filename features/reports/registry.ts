@@ -1,5 +1,5 @@
-import type { ReportSectionId, Role } from "@/types"
-import { canViewReport } from "@/lib/permissions"
+import type { ReportSectionId } from "@/types"
+import { canViewReport, type AccessContext } from "@/lib/permissions"
 import type { AnyReport } from "@/lib/reports/types"
 import { ASSET_REPORTS } from "./definitions/assets"
 import { FINANCE_REPORTS } from "./definitions/finance"
@@ -25,9 +25,10 @@ const byId = new Map(REPORTS.map((r) => [r.id, r]))
 export const findReport = (id: string | null | undefined) => (id ? byId.get(id) : undefined)
 export const reportHref = (r: AnyReport) => `/reports/${r.slug}?report=${r.id}`
 export const reportAccess = (r: AnyReport) => r.access ?? [r.section]
-export const canViewReportAs = (role: Role, r: AnyReport) => canViewReport(role, reportAccess(r))
+/** Visible through the role's report tags or an Administrator grant on the report's section. */
+export const canViewReportAs = (ctx: AccessContext, r: AnyReport) => canViewReport(ctx, r.section, reportAccess(r))
 
-export const reportsInSection = (section: ReportSectionId, role: Role) => REPORTS.filter((r) => r.section === section && canViewReportAs(role, r))
+export const reportsInSection = (section: ReportSectionId, ctx: AccessContext) => REPORTS.filter((r) => r.section === section && canViewReportAs(ctx, r))
 
 /** Overview quick links (the commonly requested reports). */
 export const QUICK_LINK_IDS = [

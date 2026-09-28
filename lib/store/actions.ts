@@ -452,9 +452,6 @@ export const settingsActions = {
 }
 
 export const sessionActions = {
-  switchUser(userId: string) {
-    set((s) => ({ ...s, session: { ...s.session, currentUserId: userId } }))
-  },
   setFiscalYear(fiscalYear: number) {
     set((s) => ({ ...s, session: { ...s.session, fiscalYear } }))
   },

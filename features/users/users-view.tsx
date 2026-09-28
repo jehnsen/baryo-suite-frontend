@@ -1,7 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Check, Mail, Minus, Pencil, ShieldOff, UserCheck, UserCog, UserPlus } from "lucide-react"
+import { useSearchParams } from "next/navigation"
+import { Mail, Pencil, ShieldOff, UserCheck, UserCog, UserPlus } from "lucide-react"
 import { toast } from "sonner"
 import type { User } from "@/types"
 import { Button } from "@/components/ui/button"
@@ -9,9 +10,7 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 import { ContentTabs } from "@/components/shared/content-tabs"
 import { PageHeader } from "@/components/shared/page-header"
 import { PersonAvatar } from "@/components/shared/person-avatar"
-import { SectionCard } from "@/components/shared/section-card"
 import { StatusBadge, TagBadge } from "@/components/shared/status-badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DataTable, type DataTableFilter } from "@/components/tables/data-table"
 import { DataTableColumnHeader } from "@/components/tables/data-table-column-header"
 import { RowActions } from "@/components/tables/row-actions"
@@ -21,68 +20,10 @@ import { useCurrentUser, useUsers } from "@/hooks/use-data"
 import { usePageLoad } from "@/hooks/use-page-load"
 import { ROLES, USER_STATUSES, toOptions } from "@/lib/constants"
 import { formatRelative } from "@/lib/format"
-import { ALL_NAV_ITEMS } from "@/lib/navigation"
-import { REPORT_SECTIONS } from "@/lib/reports/sections"
-import { ROLE_DESCRIPTIONS, ROLE_MODULES, hasCapability } from "@/lib/permissions"
 import { simulateLatency, userActions } from "@/lib/store/actions"
+import { AccessMatrix } from "./access-matrix"
 
 const col = createAppColumnHelper<User>()
-
-// Report sections collapse into one "Reports" column (sections per role).
-const MODULE_COLUMNS = ALL_NAV_ITEMS.filter((m) => !m.module.startsWith("reports"))
-const REPORT_SECTION_COUNT = REPORT_SECTIONS.length
-
-function PermissionsMatrix() {
-  return (
-    <SectionCard title="Role permissions" description="Module access per role (mock RBAC — enforced in navigation and routes)." contentClassName="px-0">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="sticky left-0 z-10 bg-card pl-4 text-xs">Role</TableHead>
-              {MODULE_COLUMNS.map((m) => (
-                <TableHead key={m.module} className="text-center text-xs whitespace-nowrap">
-                  {m.title}
-                </TableHead>
-              ))}
-              <TableHead className="text-center text-xs whitespace-nowrap">Report sections</TableHead>
-              <TableHead className="text-center text-xs">Approve</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {ROLES.map((role) => (
-              <TableRow key={role}>
-                <TableCell className="sticky left-0 z-10 bg-card pl-4">
-                  <p className="font-medium whitespace-nowrap">{role}</p>
-                  <p className="max-w-56 text-xs whitespace-normal text-muted-foreground">{ROLE_DESCRIPTIONS[role]}</p>
-                </TableCell>
-                {MODULE_COLUMNS.map((m) => (
-                  <TableCell key={m.module} className="text-center">
-                    {ROLE_MODULES[role].includes(m.module) ? (
-                      <Check className="mx-auto size-4 text-[var(--tone-success)]" aria-label="Allowed" />
-                    ) : (
-                      <Minus className="mx-auto size-4 text-muted-foreground/40" aria-label="No access" />
-                    )}
-                  </TableCell>
-                ))}
-                <TableCell className="text-center text-xs text-muted-foreground tabular-nums">
-                  {REPORT_SECTIONS.filter((s) => ROLE_MODULES[role].includes(s.module)).length} / {REPORT_SECTION_COUNT}
-                </TableCell>
-                <TableCell className="text-center">
-                  {hasCapability(role, "approve") ? (
-                    <Check className="mx-auto size-4 text-[var(--tone-success)]" aria-label="Can approve" />
-                  ) : (
-                    <Minus className="mx-auto size-4 text-muted-foreground/40" aria-label="Cannot approve" />
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </SectionCard>
-  )
-}
 
 export function UsersView() {
   const load = usePageLoad()
@@ -90,6 +31,7 @@ export function UsersView() {
   const { open } = useEntityDialogs()
   const { user: me } = useCurrentUser()
   const [suspending, setSuspending] = useState<User | null>(null)
+  const params = useSearchParams()
 
   const columns = useMemo(
     () =>
@@ -172,7 +114,7 @@ export function UsersView() {
     <div className="space-y-6">
       <PageHeader
         title="Users"
-        description="Staff accounts and their roles. Authentication will be connected in a later phase."
+        description="Staff accounts, their roles and the modules each role can use. Sign-in uses demo credentials until authentication is connected."
         breadcrumbs={[{ label: "Administration" }, { label: "Users" }]}
         actions={
           <Button onClick={() => open({ type: "user" })}>
@@ -181,6 +123,7 @@ export function UsersView() {
         }
       />
       <ContentTabs
+        defaultValue={params.get("tab") === "access" ? "access" : "users"}
         tabs={[
           {
             value: "users",
@@ -200,7 +143,7 @@ export function UsersView() {
               />
             ),
           },
-          { value: "roles", label: "Roles & permissions", content: <PermissionsMatrix /> },
+          { value: "access", label: "Access & permissions", content: <AccessMatrix /> },
         ]}
       />
       <ConfirmDialog

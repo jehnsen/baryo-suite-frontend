@@ -25,13 +25,20 @@ import type {
   Certificate,
   Household,
   Incident,
+  AccessGrant,
   ReportRun,
   Resident,
   ServiceRequest,
   User,
 } from "@/types"
 import * as mock from "@/data/mock"
+import { readSessionCookie } from "@/lib/auth"
+import { loadStoredGrants } from "./grant-storage"
 import { createStore, useStoreSelector } from "./create-store"
+
+// In the browser the store starts from the session cookie and saved grants. The server
+// renders the app shell signed-out (SessionGate shows a loader until the client takes over).
+const isBrowser = typeof window !== "undefined"
 
 export interface AppState {
   residents: Resident[]
@@ -68,7 +75,9 @@ export interface AppState {
   inventoryTransactions: InventoryTransaction[]
   // Phase 3 — printed/exported report history (reports themselves are derived)
   reportRuns: ReportRun[]
-  /** fiscalYear is the finance context shared by every finance screen. */
+  /** Module grants to the Secretary/Treasurer (persisted in the browser; see SessionGate). */
+  accessGrants: AccessGrant[]
+  /** currentUserId is "" when signed out; fiscalYear is the finance context shared by every finance screen. */
   session: { currentUserId: string; fiscalYear: number }
 }
 
@@ -103,7 +112,8 @@ export const appStore = createStore<AppState>({
   inventoryItems: mock.inventoryItems,
   inventoryTransactions: mock.inventoryTransactions,
   reportRuns: mock.reportRuns,
-  session: { currentUserId: "usr-001", fiscalYear: 2026 },
+  accessGrants: (isBrowser && loadStoredGrants()) || mock.accessGrants,
+  session: { currentUserId: (isBrowser && readSessionCookie()) || "", fiscalYear: 2026 },
 })
 
 export function useAppStore<T>(selector: (s: AppState) => T): T {

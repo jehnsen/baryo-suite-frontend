@@ -34,7 +34,8 @@ const ts = (iso: string, hour: number, minute = 0) => `${iso}T${pad(hour, 2)}:${
 const ymd = (y: number, m: number, d: number) => `${y}-${pad(m, 2)}-${pad(Math.min(d, new Date(y, m, 0).getDate()), 2)}`
 
 const TREASURER = "usr-004"
-const PB = "usr-002"
+// Approvals are the Treasurer's (the Punong Barangay no longer has an account).
+const APPROVER = TREASURER
 
 /* ------------------------------ Annual budgets ----------------------------- */
 
@@ -43,8 +44,13 @@ const budgetHistory = (fy: number, final: AnnualBudget["status"]): StatusChange<
   const steps: StatusChange<AnnualBudget["status"]>[] = [
     { status: "Draft", at: ts(ymd(y, 9, 1), 9), byUserId: TREASURER, note: "Budget proposal prepared from the Annual Investment Program." },
     { status: "For Review", at: ts(ymd(y, 9, 22), 10), byUserId: TREASURER, note: "Submitted to the Committee on Appropriations." },
-    { status: "For Authorization", at: ts(ymd(y, 10, 20), 14), byUserId: PB, note: "Endorsed to the Sangguniang Barangay for enactment." },
-    { status: "Approved", at: ts(ymd(y, 12, 15), 16), byUserId: PB, note: "Enacted through the Appropriation Ordinance; reviewed by the City Budget Office." },
+    { status: "For Authorization", at: ts(ymd(y, 10, 20), 14), byUserId: APPROVER, note: "Endorsed to the Sangguniang Barangay for enactment." },
+    {
+      status: "Approved",
+      at: ts(ymd(y, 12, 15), 16),
+      byUserId: APPROVER,
+      note: "Enacted through the Appropriation Ordinance; reviewed by the City Budget Office.",
+    },
     { status: "Active", at: ts(ymd(fy, 1, 2), 8), byUserId: TREASURER },
     { status: "Closed", at: ts(ymd(fy + 1, 1, 15), 9), byUserId: TREASURER, note: "Fiscal year closed; unexpended balances reverted." },
   ]
@@ -942,7 +948,7 @@ function build() {
         const history: StatusChange<ObligationStatus>[] = [
           { status: "Draft", at: ts(date, 9, 10), byUserId: TREASURER },
           { status: "For Review", at: ts(date, 11, 30), byUserId: TREASURER, note: "Budget availability certified by the Treasurer." },
-          { status: "Approved", at: ts(addDays(date, 1), 15, 0), byUserId: PB },
+          { status: "Approved", at: ts(addDays(date, 1), 15, 0), byUserId: APPROVER },
         ]
         obligations.push({
           id: oblId,
@@ -968,7 +974,7 @@ function build() {
           const dHistory: StatusChange<DisbursementStatus>[] = reached.map((st, i) => ({
             status: st,
             at: ts(addDays(dDate, Math.floor(i / 2)), 9 + i * 2, 15),
-            byUserId: st === "Approved" ? PB : TREASURER,
+            byUserId: st === "Approved" ? APPROVER : TREASURER,
             note: st === "For Approval" ? "Supporting documents complete." : st === "Released" ? "Check released to payee." : undefined,
           }))
           const released = dStatus === "Released"

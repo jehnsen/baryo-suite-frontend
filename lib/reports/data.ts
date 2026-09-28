@@ -10,7 +10,7 @@ import type { AssignmentScope } from "@/lib/scope"
  * operational modules use, plus shared derived structures (finance ledger,
  * stock levels, id lookups). Reports never keep their own copies of records.
  */
-export type ReportSource = Omit<AppState, "session" | "auditLogs" | "reportRuns">
+export type ReportSource = Omit<AppState, "session" | "auditLogs" | "reportRuns" | "accessGrants">
 
 const index = <T extends { id: string }>(items: T[]) => new Map(items.map((i) => [i.id, i]))
 

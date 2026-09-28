@@ -314,7 +314,21 @@ export interface Announcement {
 /* Users, roles, permissions                                                  */
 /* -------------------------------------------------------------------------- */
 
-export type Role = "Administrator" | "Punong Barangay" | "Secretary" | "Treasurer" | "Kagawad" | "Tanod" | "Encoder" | "Viewer"
+/** The three account types. Officials (Punong Barangay, Kagawads, Tanods) are records, not accounts. */
+export type Role = "Administrator" | "Secretary" | "Treasurer"
+
+/** none · view (view & print) · full (create, edit, process). */
+export type AccessLevel = "none" | "view" | "full"
+
+/** Extra module access the Administrator grants to the Secretary or Treasurer. */
+export interface AccessGrant {
+  id: ID
+  role: Exclude<Role, "Administrator">
+  module: ModuleKey
+  level: Exclude<AccessLevel, "none">
+  grantedById: ID
+  grantedAt: string
+}
 
 /** Every navigable module. New modules (Health, DRRM, …) extend this union. */
 export type ModuleKey =
@@ -401,6 +415,7 @@ export type AuditModule =
   | "Inventory"
   // Phase 3
   | "Reports"
+  | "Access"
 
 export type AuditAction =
   | "Created"
@@ -429,6 +444,9 @@ export type AuditAction =
   // Phase 3
   | "Printed"
   | "Exported"
+  | "Logged Out"
+  | "Granted"
+  | "Revoked"
 
 export interface AuditLog {
   id: ID
@@ -463,6 +481,7 @@ export interface BarangaySettings {
   email: string
   logoUrl?: string
   sealUrl?: string
+  municipalityLogoUrl?: string
   punongBarangayId: ID
   secretaryId: ID
   treasurerId: ID

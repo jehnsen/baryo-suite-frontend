@@ -44,7 +44,7 @@ const ms = (
 })
 
 const projHistory = (entries: [Project["status"], string, string?][]): StatusChange<Project["status"]>[] =>
-  entries.map(([status, date, note]) => ({ status, at: ts(date, 10), byUserId: status === "Approved" ? "usr-002" : "usr-005", note }))
+  entries.map(([status, date, note]) => ({ status, at: ts(date, 10), byUserId: status === "Approved" ? "usr-004" : "usr-003", note }))
 
 export const projects: Project[] = [
   {
@@ -641,7 +641,7 @@ function buildInventory() {
             date: `2026-${pad(m, 2)}-${pad(rng.int(3, 26), 2)}`,
             issuedTo: rng.pick(ISSUE_TO),
             reference: `RIS-2026-${pad(m, 2)}${pad(i, 2)}`,
-            byUserId: rng.pick(["usr-004", "usr-008"]),
+            byUserId: rng.pick(["usr-004"]),
           })
         }
         if (qty <= reorder && m < 9 && rng.chance(0.7)) {

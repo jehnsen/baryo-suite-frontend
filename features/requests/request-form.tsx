@@ -67,7 +67,7 @@ export function RequestFormDialog({ open, onOpenChange, defaults, onSaved }: Ent
           <UserSelectField
             name="assignedToId"
             label="Assign to"
-            roles={["Secretary", "Encoder", "Administrator"]}
+            roles={["Secretary"]}
             className="sm:col-span-2"
             description="Optional — unassigned requests appear in the queue."
           />

@@ -1,7 +1,7 @@
 import type { Committee, PPA, Project } from "@/types"
 
 /**
- * Assignment scoping for roles in SCOPED_TO_ASSIGNMENTS (Kagawads): they see
+ * Assignment scoping for roles in SCOPED_TO_ASSIGNMENTS (none today; built for Kagawad accounts): they see
  * the committees they sit on and the PPAs/projects they are responsible for or
  * whose committee they sit on. Unscoped roles see everything.
  */

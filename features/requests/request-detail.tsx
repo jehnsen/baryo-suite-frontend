@@ -211,7 +211,7 @@ function RequestDetailContent({ r }: { r: ServiceRequest }) {
               </SelectTrigger>
               <SelectContent>
                 {allUsers
-                  .filter((u) => u.status === "Active" && ["Administrator", "Secretary", "Encoder", "Punong Barangay"].includes(u.role))
+                  .filter((u) => u.status === "Active" && u.role === "Secretary")
                   .map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       {u.name} · {u.role}

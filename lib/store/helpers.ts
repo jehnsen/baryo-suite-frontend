@@ -1,4 +1,5 @@
 import type { Attachment, AuditAction, AuditModule } from "@/types"
+import { format } from "date-fns"
 import { toISODate } from "@/lib/format"
 import { appStore, type AppState } from "./app-store"
 
@@ -6,7 +7,8 @@ import { appStore, type AppState } from "./app-store"
 
 let seq = 0
 export const newId = (prefix: string) => `${prefix}-${Date.now().toString(36)}${(seq++).toString(36)}`
-export const now = () => new Date().toISOString()
+/** ISO timestamp with the local offset (e.g. 2026-09-28T17:20:05+08:00), matching the mock data so string sorts stay chronological. */
+export const now = () => format(new Date(), "yyyy-MM-dd'T'HH:mm:ssxxx")
 export const today = () => toISODate(new Date())
 export const year = () => new Date().getFullYear()
 

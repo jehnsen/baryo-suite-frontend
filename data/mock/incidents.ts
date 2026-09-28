@@ -204,7 +204,7 @@ function historyFor(status: IncidentStatus, days: number): StatusChange<Incident
   return flow.slice(0, flow.indexOf(status) + 1).map((s, i) => ({
     status: s,
     at: timestampDaysAgo(Math.max(0, days - i), 8 + i * 3, 10),
-    byUserId: i === 0 ? "usr-007" : "usr-006",
+    byUserId: "usr-003",
   }))
 }
 

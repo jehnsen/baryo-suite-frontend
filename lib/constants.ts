@@ -192,7 +192,7 @@ export const ANNOUNCEMENT_CATEGORIES: AnnouncementCategory[] = ["General", "Emer
 export const ANNOUNCEMENT_AUDIENCES: AnnouncementAudience[] = ["All Residents", "Selected Purok", "Senior Citizens", "Youth"]
 export const ANNOUNCEMENT_STATUSES: AnnouncementStatus[] = ["Draft", "Published", "Archived"]
 
-export const ROLES: Role[] = ["Administrator", "Punong Barangay", "Secretary", "Treasurer", "Kagawad", "Tanod", "Encoder", "Viewer"]
+export const ROLES: Role[] = ["Administrator", "Secretary", "Treasurer"]
 export const USER_STATUSES: UserStatus[] = ["Active", "Invited", "Suspended"]
 
 export const AUDIT_MODULES: AuditModule[] = [
@@ -224,6 +224,7 @@ export const AUDIT_MODULES: AuditModule[] = [
   "Assets",
   "Inventory",
   "Reports",
+  "Access",
 ]
 export const AUDIT_ACTIONS: AuditAction[] = [
   "Created",
@@ -250,6 +251,9 @@ export const AUDIT_ACTIONS: AuditAction[] = [
   "Adjusted",
   "Printed",
   "Exported",
+  "Logged Out",
+  "Granted",
+  "Revoked",
 ]
 
 /** Build `{label, value}` options from a string list. */

@@ -427,7 +427,7 @@ function build() {
       history.push({
         status: "Approved",
         at: ts(o.number === "2025-006" ? "2025-12-15" : approved, 16),
-        byUserId: "usr-002",
+        byUserId: "usr-003",
         note: "Approved on third reading.",
       })
     if (["Effective", "Repealed"].includes(o.status) && o.effective)
@@ -468,7 +468,7 @@ function build() {
     const history: StatusChange<ResolutionStatus>[] = [{ status: "Draft", at: ts(date ?? "2026-09-22", 9), byUserId: "usr-003" }]
     if (r.status !== "Draft" && r.status !== "Archived") history.push({ status: "Proposed", at: ts(date!, 14), byUserId: "usr-003" })
     if (r.status === "Approved" || r.status === "Rejected")
-      history.push({ status: r.status, at: ts(date!, 16), byUserId: "usr-002", note: r.status === "Rejected" ? "Motion lost, 3–5." : "Unanimously approved." })
+      history.push({ status: r.status, at: ts(date!, 16), byUserId: "usr-003", note: r.status === "Rejected" ? "Motion lost, 3–5." : "Unanimously approved." })
     if (r.status === "Archived") history.push({ status: "Archived", at: ts("2026-01-10", 9), byUserId: "usr-003" })
     return {
       id: `res-${r.number}`,

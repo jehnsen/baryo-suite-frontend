@@ -133,7 +133,7 @@ export function CertificateDocument({ certificate: c, resident: r, settings: s, 
 
       {/* Letterhead */}
       <header className="flex items-center justify-between gap-4 border-b-2 border-double border-neutral-800 pb-4">
-        <Placeholder label="Barangay Logo" />
+        <LetterheadMark src={s.logoUrl} label="Barangay Logo" alt={`Barangay ${s.barangayName} logo`} />
         <div className="text-center leading-snug">
           <p className="text-[12px]">Republic of the Philippines</p>
           <p className="text-[12px]">Province of {s.province}</p>
@@ -144,7 +144,7 @@ export function CertificateDocument({ certificate: c, resident: r, settings: s, 
             {s.contactNumber} · {s.email}
           </p>
         </div>
-        <Placeholder label="City Seal" />
+        <LetterheadMark src={s.municipalityLogoUrl} label="Municipal Seal" alt={`${s.municipality} seal`} />
       </header>
 
       <h1 className="mt-8 text-center text-[22px] font-bold tracking-[0.12em] uppercase">{TITLES[c.type]}</h1>
@@ -211,5 +211,14 @@ function Placeholder({ label }: { label: string }) {
     <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-neutral-300 p-1 text-center font-sans text-[9px] leading-tight text-neutral-400 uppercase">
       {label}
     </div>
+  )
+}
+
+/** Letterhead crest — renders the configured image, or a dashed placeholder while unset. */
+function LetterheadMark({ src, label, alt }: { src?: string; label: string; alt: string }) {
+  if (!src) return <Placeholder label={label} />
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- fixed-size printable document, not a responsive page image
+    <img src={src} alt={alt} className="size-20 shrink-0 rounded-full object-cover" />
   )
 }

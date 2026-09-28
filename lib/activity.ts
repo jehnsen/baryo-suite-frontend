@@ -2,6 +2,7 @@ import {
   Banknote,
   Boxes,
   ChartColumn,
+  KeyRound,
   CalendarDays,
   ClipboardList,
   FilePen,
@@ -62,6 +63,7 @@ export const MODULE_ICONS: Record<AuditModule, LucideIcon> = {
   Assets: Monitor,
   Inventory: Boxes,
   Reports: ChartColumn,
+  Access: KeyRound,
 }
 
 export const ACTION_TONES: Partial<Record<AuditAction, Tone>> = {
@@ -87,6 +89,9 @@ export const ACTION_TONES: Partial<Record<AuditAction, Tone>> = {
   Adjusted: "warning",
   Printed: "neutral",
   Exported: "purple",
+  "Logged Out": "neutral",
+  Granted: "success",
+  Revoked: "danger",
 }
 
 const ACTION_VERBS: Record<AuditAction, string> = {
@@ -114,6 +119,9 @@ const ACTION_VERBS: Record<AuditAction, string> = {
   Adjusted: "adjusted stock of",
   Printed: "printed",
   Exported: "exported",
+  "Logged Out": "signed out",
+  Granted: "granted access to",
+  Revoked: "revoked access to",
 }
 
 /** Deep link for an audit record, when the module has a detail route. */
@@ -164,6 +172,8 @@ export function recordHref(module: AuditModule, recordId?: string): string | und
       return `/assets/${recordId}`
     case "Inventory":
       return `/inventory?open=${recordId}`
+    case "Access":
+      return `/admin/users?tab=access`
     case "Reports":
       return `/reports?report=${recordId}`
     default:
@@ -182,7 +192,7 @@ export function auditToActivity(log: AuditLog, users: Map<string, User>): Activi
     id: log.id,
     actor: users.get(log.userId)?.name ?? "System",
     action: ACTION_VERBS[log.action],
-    target: log.action === "Logged In" ? undefined : log.recordLabel,
+    target: log.action === "Logged In" || log.action === "Logged Out" ? undefined : log.recordLabel,
     href: recordHref(log.module, log.recordId),
     timestamp: log.timestamp,
     icon,

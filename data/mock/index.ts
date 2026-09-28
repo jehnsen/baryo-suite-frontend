@@ -30,3 +30,5 @@ export { assets } from "./assets"
 export { inventoryItems, inventoryTransactions } from "./inventory"
 // Phase 3
 export { reportRuns } from "./reportRuns"
+// Access control
+export { accessGrants } from "./accessGrants"

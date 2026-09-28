@@ -47,15 +47,7 @@ export function ReportPrintView<R>(p: ReportPrintViewProps<R>) {
     >
       {/* Letterhead */}
       <header className="flex items-center gap-4 border-b-2 border-double border-neutral-800 pb-3">
-        {s.logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={s.logoUrl} alt="Barangay logo" className="size-16 shrink-0 rounded-full object-cover" />
-        ) : (
-          <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-full border border-neutral-400 text-neutral-500">
-            <Landmark className="size-6" strokeWidth={1.4} aria-hidden />
-            <span className="mt-0.5 text-[7px] tracking-wide uppercase">Barangay Logo</span>
-          </div>
-        )}
+        <LetterheadMark src={s.logoUrl} label="Barangay Logo" alt={`Barangay ${s.barangayName} logo`} />
         <div className="flex-1 text-center font-serif leading-tight">
           <p className="text-[10.5px]">Republic of the Philippines</p>
           <p className="text-[10.5px]">Province of {s.province}</p>
@@ -65,7 +57,7 @@ export function ReportPrintView<R>(p: ReportPrintViewProps<R>) {
             {s.address} · {s.contactNumber} · {s.email}
           </p>
         </div>
-        <div className="size-16 shrink-0" aria-hidden />
+        <LetterheadMark src={s.municipalityLogoUrl} label="Municipal Seal" alt={`${s.municipality} seal`} />
       </header>
 
       {/* Title block */}
@@ -126,5 +118,21 @@ export function ReportPrintView<R>(p: ReportPrintViewProps<R>) {
         {formatDateTime(p.generatedAt)}
       </footer>
     </article>
+  )
+}
+
+/** Letterhead crest — renders the configured image, or an icon placeholder while unset. */
+function LetterheadMark({ src, label, alt }: { src?: string; label: string; alt: string }) {
+  if (!src) {
+    return (
+      <div className="flex size-16 shrink-0 flex-col items-center justify-center rounded-full border border-neutral-400 text-neutral-500">
+        <Landmark className="size-6" strokeWidth={1.4} aria-hidden />
+        <span className="mt-0.5 text-[7px] tracking-wide uppercase">{label}</span>
+      </div>
+    )
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- fixed-size printable document, not a responsive page image
+    <img src={src} alt={alt} className="size-16 shrink-0 rounded-full object-cover" />
   )
 }

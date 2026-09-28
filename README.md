@@ -12,8 +12,20 @@ Frontend of BaryoSuite, a barangay operations platform for Philippine barangays.
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000 (redirects to /dashboard)
+npm run dev        # http://localhost:3000 (redirects to /login)
 ```
+
+### Signing in
+
+Authentication is mocked with hardcoded accounts (`lib/auth.ts`); the login page lists them and can fill the form for you.
+
+| Account       | Username    | Password       | What it does                                                                                                                                   |
+| ------------- | ----------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Administrator | `admin`     | `admin123`     | Users, access & permissions, settings, officials and audit log. Every Secretary/Treasurer module is **view & print only** (e.g. certificates). |
+| Secretary     | `secretary` | `secretary123` | Residents, households, certificates, requests, blotter, incidents, announcements, governance and projects.                                     |
+| Treasurer     | `treasurer` | `treasurer123` | Finance (budget to expenses), assets and inventory. Approves budgets, obligations, disbursements and projects.                                 |
+
+Usernames or account emails both work. A suspended account cannot sign in. The session is a plain cookie holding the user id, which is **not secure**; it only exists so the flow works until real authentication is connected.
 
 | Script              | Purpose                                |
 | ------------------- | -------------------------------------- |
@@ -43,14 +55,14 @@ npm run dev        # http://localhost:3000 (redirects to /dashboard)
 - **Approvals:** `/finance/disbursements` lists vouchers that are **For Review** or **For Approval**. Approving and releasing one asks for a check number, creates the expense, and rolls the obligation to _Partially_ or _Fully Disbursed_. Approval is blocked when supporting documents are missing or the amount exceeds the PPA's available balance.
 - **Alerts:** the Finance Dashboard flags categories nearing their limit (thresholds are set in **Settings → Finance**), pending approvals, missing documents, overdue liquidation and unreconciled collections.
 - **Governance chain:** open a session, then its **Legislation** and **Minutes**. For a live run-through: **Schedule session**, **Start session** (roll call and quorum), **Record motion**, **Adjourn**, then **Draft minutes**.
-- **Roles:** use **View as role** in the user menu. The Treasurer sees Finance, Assets and Inventory. The Secretary sees Governance. A Kagawad sees only the committees, PPAs and projects assigned to them.
+- **Access:** sign in as `admin`, open **Users → Access & permissions** and give the Secretary or Treasurer a module at _View & print_ or _Full access_. Sign out, sign in as that account, and the module appears in the sidebar.
   **Phase 3**
 
 - **Reports:** `/reports` shows headline figures (each read from a report's own summary), the report sections, quick links, and recent and frequently used runs. Each section (`/reports/residents`, `/reports/finance`, …) lists its reports; `?report=<id>` selects one.
 - **Filters:** change filters, then **Apply filters**. **Reset** returns to the report's defaults (for example Status: Active, or the current fiscal year).
 - **Print:** **Print** renders the standard layout: letterhead from **Settings**, period and criteria, summary, every row with totals, signatories and page numbers. Wide reports print landscape.
 - **Export:** **Export → CSV** downloads the filtered rows with a totals row. Excel and PDF are queued placeholders. Every print and CSV export is recorded in the audit log and in the overview's recent reports.
-- **Roles:** Treasurer sees Finance, Assets & Inventory and Project Financial Progress. Secretary sees Residents, Services, Governance and the public finance summaries. Tanod sees Peace & Order. A Kagawad sees Governance, Projects and public summaries, scoped to their committees and projects.
+- **Report access:** the Administrator sees every report. The Secretary sees Residents & Households, Certificates & Services, Peace & Order, Governance, Projects and the public finance summaries. The Treasurer sees Finance, Assets & Inventory and Project Financial Progress. Granting a report section extends this.
 
 **General**
 
@@ -106,7 +118,15 @@ Projects read their budget and financial progress from their PPA. Disbursements 
 - Certificate → collection.
 - The FY 2026 budget → its appropriation ordinance.
 
-**Permissions.** `lib/permissions.ts` maps each role to its modules and capabilities (`write`, `approve`, `admin`, `finance`, `financeApprove`, `governance`, `operations`). Kagawads are scoped to their assignments via `useAssignmentScope()`. `/ppas/*` is reachable from either the allocations module or the projects module.
+**Authentication.** `proxy.ts` redirects any page request without the session cookie to `/login` (and `/login` back to the app when signed in). In the browser, `SessionGate` renders the shell only for an active signed-in account and handles sign-out. `authActions` (`lib/store/auth-actions.ts`) signs in and out and writes the audit log.
+
+**Permissions.** `lib/permissions.ts` gives each account type a level per module: _none_, _view_ (view & print) or _full_. The Secretary and Treasurer own their modules (full). The Administrator owns configuration and sees everything else at view. Admin grants (`accessGrants` in the store, persisted in the browser's localStorage) raise the Secretary's or Treasurer's level for a module; they only add access and never grant approvals. Components ask `useCurrentUser()`:
+
+- `can(cap)`: capability on the **current page's** module (a view-level page returns false for every action).
+- `canIn(module, cap)`: capability in a specific module (header, dashboard).
+- `canAccess(module)` / `accessLevel(module)`: for navigation and links.
+
+Approvals follow the approver: the Treasurer approves projects they can only view. `/ppas/*` is reachable from either the allocations module or the projects module.
 
 **Reports.** A report is a definition (`features/reports/definitions/*.ts`), not a page. It declares a `source` (store records), shared `filters` by id, an optional `rows` aggregation, `columns` (with a format and total), `summary` metrics, `charts`, optional `groupings`, access tags and print options. `<ReportPage>` renders any definition, and `lib/reports/engine.ts` (`runReport`) is the only pipeline: source → filters → rows → summary. Calculations such as age brackets, processing time, resolution rate, attendance and project progress live in `lib/reports/metrics.ts`. Finance amounts come from the same ledger as the finance module. `lib/reports/export.ts` (`exportReport`) is the one export path, also used by every DataTable's CSV export.
 
@@ -127,3 +147,12 @@ To add a report, write a definition with `defineReport(...)` and add it to its s
 ## Not yet in scope
 
 Health, social welfare, DRRM and GIS reports, COA/government accounting forms, custom report builder, scheduled or emailed reports, server-side PDF/Excel generation, general ledger, double-entry accounting, payroll, procurement bidding and purchase orders, supplier portal, health records, social assistance, DRRM and relief distribution, resident portal, online payments (GCash and Maya are labels only), SMS, GIS, AI and government API integrations.
+
+
+## demo 
+
+<!-- 
+admin: admin123
+secretary: secretary123
+treasurer: treasurer123 
+-->

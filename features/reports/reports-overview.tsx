@@ -44,7 +44,7 @@ export function ReportsOverview() {
   const d = useReportData()
   const runs = useReportRuns()
   const { fiscalYear } = useFiscalYear()
-  const { role, canAccess } = useCurrentUser()
+  const { canAccess, accessContext } = useCurrentUser()
 
   // /reports?report=<id> (audit log links) opens the report in its section.
   const deepLink = findReport(params.get("report"))
@@ -52,30 +52,30 @@ export function ReportsOverview() {
     if (deepLink) router.replace(reportHref(deepLink))
   }, [deepLink, router])
 
-  const sections = REPORT_SECTIONS.filter((s) => canAccess(s.module)).map((s) => ({ ...s, reports: reportsInSection(s.id, role) }))
+  const sections = REPORT_SECTIONS.filter((s) => canAccess(s.module)).map((s) => ({ ...s, reports: reportsInSection(s.id, accessContext) }))
 
   const glance = useMemo(
     () =>
       GLANCE.flatMap(({ reportId, metric, label }): ReportMetric[] => {
         const report = findReport(reportId)
-        if (!report || !canViewReportAs(role, report)) return []
+        if (!report || !canViewReportAs(accessContext, report)) return []
         const m = runReportWithDefaults(report, d, fiscalYear).metrics.find((x) => x.label === metric)
         const fy = report.filters?.some((f) => f.id === "fiscalYear") ? `FY ${fiscalYear}` : undefined
         return m ? [{ ...m, label, hint: fy ?? sectionById(report.section).title, tone: undefined }] : []
       }),
-    [d, fiscalYear, role],
+    [d, fiscalYear, accessContext],
   )
 
   const visibleRuns = runs.filter((r) => {
     const report = findReport(r.reportId)
-    return report && canViewReportAs(role, report)
+    return report && canViewReportAs(accessContext, report)
   })
   const frequent = Object.entries(visibleRuns.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.reportId]: (acc[r.reportId] ?? 0) + 1 }), {}))
     .sort(([, a], [, b]) => b - a)
     .slice(0, 6)
   const maxRuns = frequent[0]?.[1] ?? 1
   const recent = [...visibleRuns].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 8)
-  const quickLinks = QUICK_LINK_IDS.map(findReport).filter((r) => r && canViewReportAs(role, r))
+  const quickLinks = QUICK_LINK_IDS.map(findReport).filter((r) => r && canViewReportAs(accessContext, r))
 
   return (
     <div className="space-y-6">

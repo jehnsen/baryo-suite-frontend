@@ -16,12 +16,12 @@ import { canViewReportAs, findReport, reportHref, reportsInSection } from "./reg
 /** /reports/[slug]: the section's report list plus the selected report (?report=<id>). */
 export function ReportSectionView({ slug }: { slug: string }) {
   const section = sectionForSlug(slug)!
-  const { role } = useCurrentUser()
+  const { role, accessContext } = useCurrentUser()
   const params = useSearchParams()
-  const reports = reportsInSection(section.id, role)
+  const reports = reportsInSection(section.id, accessContext)
   const requested = findReport(params.get("report"))
 
-  if (requested && requested.section === section.id && !canViewReportAs(role, requested)) {
+  if (requested && requested.section === section.id && !canViewReportAs(accessContext, requested)) {
     return (
       <EmptyState
         icon={Lock}

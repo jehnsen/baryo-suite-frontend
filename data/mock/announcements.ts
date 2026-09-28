@@ -13,7 +13,7 @@ export const announcements: Announcement[] = [
     publishDate: daysAgo(0),
     expirationDate: daysAgo(-3),
     status: "Published",
-    authorId: "usr-002",
+    authorId: "usr-003",
     createdAt: timestampDaysAgo(0, 7, 30),
   },
   {
@@ -26,7 +26,7 @@ export const announcements: Announcement[] = [
     publishDate: daysAgo(3),
     expirationDate: daysAgo(-7),
     status: "Published",
-    authorId: "usr-009",
+    authorId: "usr-003",
     createdAt: timestampDaysAgo(3, 9, 0),
   },
   {
@@ -65,7 +65,7 @@ export const announcements: Announcement[] = [
     publishDate: daysAgo(8),
     expirationDate: daysAgo(-12),
     status: "Published",
-    authorId: "usr-011",
+    authorId: "usr-003",
     createdAt: timestampDaysAgo(8, 16, 0),
   },
   {
@@ -92,7 +92,7 @@ export const announcements: Announcement[] = [
     publishDate: daysAgo(15),
     expirationDate: daysAgo(-15),
     status: "Published",
-    authorId: "usr-009",
+    authorId: "usr-003",
     createdAt: timestampDaysAgo(15, 8, 45),
   },
   {
@@ -118,7 +118,7 @@ export const announcements: Announcement[] = [
     publishDate: daysAgo(-1),
     expirationDate: daysAgo(-14),
     status: "Draft",
-    authorId: "usr-002",
+    authorId: "usr-003",
     createdAt: timestampDaysAgo(0, 15, 30),
   },
   {
@@ -131,7 +131,7 @@ export const announcements: Announcement[] = [
     publishDate: daysAgo(90),
     expirationDate: daysAgo(60),
     status: "Archived",
-    authorId: "usr-009",
+    authorId: "usr-003",
     createdAt: timestampDaysAgo(90, 10, 0),
   },
 ]

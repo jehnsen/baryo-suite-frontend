@@ -15,7 +15,7 @@ function party(index: number): CaseParty {
   }
 }
 
-function history(status: BlotterStatus, startDaysAgo: number, reportedTime: string, userId = "usr-006"): StatusChange<BlotterStatus>[] {
+function history(status: BlotterStatus, startDaysAgo: number, reportedTime: string, userId = "usr-003"): StatusChange<BlotterStatus>[] {
   const path: BlotterStatus[] =
     status === "Referred" ? ["Reported", "Under Investigation", "For Mediation", "Referred"] : BLOTTER_FLOW.slice(0, BLOTTER_FLOW.indexOf(status) + 1)
   const step = Math.max(1, Math.floor(startDaysAgo / (path.length + 1)))
@@ -30,7 +30,7 @@ function history(status: BlotterStatus, startDaysAgo: number, reportedTime: stri
             (Number(reportedTime.slice(3)) + 30) % 60,
           )
         : timestampDaysAgo(Math.max(0, startDaysAgo - i * step), 9 + i, 15),
-    byUserId: i === 0 ? "usr-007" : userId,
+    byUserId: userId,
     note:
       s === "Settled"
         ? "Both parties signed the Kasunduang Pag-aayos before the Lupon."
@@ -285,7 +285,7 @@ export const blotters: BlotterCase[] = seeds
       attachments: s.attachments ?? [],
       notes: (s.notes ?? []).map((body, n) => ({
         id: `${id}-n${n}`,
-        authorId: "usr-006",
+        authorId: "usr-003",
         body,
         createdAt: timestampDaysAgo(Math.max(0, s.days - 1), 11, 20 + n),
       })),

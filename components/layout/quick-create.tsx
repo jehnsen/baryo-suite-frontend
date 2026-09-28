@@ -46,8 +46,9 @@ const ITEMS: QuickCreateItem[] = [
 export function QuickCreate() {
   const router = useRouter()
   const { open } = useEntityDialogs()
-  const { canAccess, can } = useCurrentUser()
-  const items = ITEMS.filter((i) => canAccess(i.module) && can(i.capability ?? "write"))
+  const { canIn } = useCurrentUser()
+  // The header is on every page, so check each item against its own module (view-only modules offer nothing).
+  const items = ITEMS.filter((i) => canIn(i.module, i.capability ?? "write"))
   if (items.length === 0) return null
   return (
     <DropdownMenu>

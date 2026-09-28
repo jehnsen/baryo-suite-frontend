@@ -3,7 +3,9 @@
 import { useMemo } from "react"
 import type { ModuleKey } from "@/types"
 import { useAppStore } from "@/lib/store/app-store"
-import { canAccess, hasCapability, type Capability } from "@/lib/permissions"
+import { usePathname } from "next/navigation"
+import { accessLevel, allows, type Capability } from "@/lib/permissions"
+import { accessForPath } from "@/lib/navigation"
 
 /* Collection hooks — the component-facing data API. Replace internals with
  * fetchers (TanStack Query, server components) when the backend exists. */
@@ -76,14 +78,25 @@ export function useHouseholdMembers(householdId?: string) {
 
 export function useCurrentUser() {
   const userId = useAppStore((s) => s.session.currentUserId)
+  const grants = useAppStore((s) => s.accessGrants)
   const users = useUsers()
+  const pathname = usePathname()
+  // Inside the app shell SessionGate guarantees a signed-in user; users[0] only covers render paths outside it.
   const user = users.find((u) => u.id === userId) ?? users[0]
+  const ctx = { role: user.role, grants }
+  const routeModules = accessForPath(pathname)?.modules ?? []
   return {
     user,
     role: user.role,
     /** Official record linked to the signed-in user (for "assigned to me" scoping). */
     officialId: user.officialId,
-    can: (cap: Capability) => hasCapability(user.role, cap),
-    canAccess: (module: ModuleKey) => canAccess(user.role, module),
+    /** none · view (view & print) · full, including the Administrator's grants. */
+    accessLevel: (module: ModuleKey) => accessLevel(ctx, module),
+    canAccess: (module: ModuleKey) => accessLevel(ctx, module) !== "none",
+    /** Capability inside the current page's module (view-level pages allow no actions). */
+    can: (cap: Capability) => routeModules.some((m) => allows(ctx, m, cap)),
+    /** Capability inside a specific module (header, dashboard and other cross-module UI). */
+    canIn: (module: ModuleKey, cap: Capability) => allows(ctx, module, cap),
+    accessContext: ctx,
   }
 }

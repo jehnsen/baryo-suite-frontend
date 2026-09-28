@@ -45,7 +45,7 @@ export function DashboardView() {
   const load = usePageLoad()
   const stats = useDashboardStats()
   const settings = useSettings()
-  const { user, canAccess, can } = useCurrentUser()
+  const { user, canAccess, canIn } = useCurrentUser()
   const logs = useAuditLogs()
   const { users } = useLookups()
   const activity = useMemo(
@@ -87,7 +87,7 @@ export function DashboardView() {
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
-            {canAccess("residents") && can("write") && (
+            {canIn("residents", "write") && (
               <Button asChild className="shadow-sm">
                 <Link href="/residents/new">
                   <UserPlus /> Add resident
