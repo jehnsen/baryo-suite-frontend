@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { BellRing, FileBadge, FileClock, Gavel, Home, Plus, ShieldAlert, UserPlus } from "lucide-react"
+import { BellRing, CalendarDays, FileBadge, FileClock, FilePen, FolderKanban, Gavel, HandCoins, Home, Plus, ShieldAlert, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -14,10 +14,11 @@ import {
 import { useEntityDialogs, type CreatableEntity } from "@/components/providers/entity-dialogs-provider"
 import { useCurrentUser } from "@/hooks/use-data"
 import type { ModuleKey } from "@/types"
+import type { Capability } from "@/lib/permissions"
 
-type QuickCreateItem =
-  | { kind: "route"; key: string; label: string; icon: typeof Plus; module: ModuleKey; href: string }
-  | { kind: "dialog"; key: CreatableEntity; label: string; icon: typeof Plus; module: ModuleKey }
+type QuickCreateItem = { label: string; icon: typeof Plus; module: ModuleKey; capability?: Capability } & (
+  { kind: "route"; key: string; href: string } | { kind: "dialog"; key: CreatableEntity }
+)
 
 const ITEMS: QuickCreateItem[] = [
   { kind: "route", key: "resident", label: "Resident", icon: UserPlus, module: "residents", href: "/residents/new" },
@@ -27,14 +28,27 @@ const ITEMS: QuickCreateItem[] = [
   { kind: "dialog", key: "blotter", label: "Blotter Case", icon: Gavel, module: "blotter" },
   { kind: "route", key: "incident", label: "Incident", icon: ShieldAlert, module: "incidents", href: "/incidents/new" },
   { kind: "dialog", key: "announcement", label: "Announcement", icon: BellRing, module: "announcements" },
+  // Phase 2
+  { kind: "dialog", key: "collection", label: "Collection", icon: HandCoins, module: "collections", capability: "finance" },
+  { kind: "dialog", key: "obligation", label: "Obligation", icon: FilePen, module: "obligations", capability: "finance" },
+  {
+    kind: "route",
+    key: "session",
+    label: "Barangay Session",
+    icon: CalendarDays,
+    module: "sessions",
+    capability: "governance",
+    href: "/governance/sessions/new",
+  },
+  { kind: "dialog", key: "project", label: "Project", icon: FolderKanban, module: "projects", capability: "operations" },
 ]
 
 export function QuickCreate() {
   const router = useRouter()
   const { open } = useEntityDialogs()
   const { canAccess, can } = useCurrentUser()
-  const items = ITEMS.filter((i) => canAccess(i.module))
-  if (!can("write") || items.length === 0) return null
+  const items = ITEMS.filter((i) => canAccess(i.module) && can(i.capability ?? "write"))
+  if (items.length === 0) return null
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -42,7 +56,7 @@ export function QuickCreate() {
           <Plus /> <span className="hidden sm:inline">Create</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel>Create new</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {items.map((i) => (

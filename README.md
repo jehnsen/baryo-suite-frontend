@@ -2,7 +2,10 @@
 
 **One Platform. Smarter Barangay Service.**
 
-Phase 1 frontend of BaryoSuite, a barangay management system for Philippine barangays. It covers residents, households, certificates, service requests, blotter, incidents, officials, announcements and administration. All data is mock data for Barangay San Roque, Baliwag City, Bulacan. There is no backend yet.
+Frontend of BaryoSuite, a barangay operations platform for Philippine barangays. All data is mock data for Barangay San Roque, Baliwag City, Bulacan. There is no backend yet.
+
+- **Phase 1 (resident services):** residents, households, certificates, service requests, blotter, incidents, officials, announcements, users, audit logs and settings.
+- **Phase 2 (operations):** finance and treasury (budget, allocations, PPAs, fund sources, collections, obligations, disbursements, expenses, reports), governance (sessions, minutes, ordinances, resolutions, committees, assemblies) and operations (programs and projects, assets, inventory).
 
 ## Getting started
 
@@ -11,12 +14,12 @@ npm install
 npm run dev        # http://localhost:3000 (redirects to /dashboard)
 ```
 
-| Script              | Purpose                          |
-| ------------------- | -------------------------------- |
-| `npm run build`     | Production build                 |
+| Script              | Purpose                                |
+| ------------------- | -------------------------------------- |
+| `npm run build`     | Production build                       |
 | `npm run lint`      | ESLint (includes React Compiler rules) |
-| `npm run typecheck` | `tsc --noEmit`                   |
-| `npm run format`    | Prettier + Tailwind class sorting |
+| `npm run typecheck` | `tsc --noEmit`                         |
+| `npm run format`    | Prettier + Tailwind class sorting      |
 
 ## Stack
 
@@ -28,61 +31,80 @@ npm run dev        # http://localhost:3000 (redirects to /dashboard)
 
 ## Trying it out
 
-- **Core workflow:** open `/requests/req-0000` (Juan Dela Cruz, Barangay Clearance) and click **Approve**, then **Mark ready for release**, then **Release & complete**. Approving creates the certificate automatically, and each later step also updates the certificate's status. Releasing a paid certificate requires an O.R. number.
-- **Blotter workflow:** on any case you can click **Schedule hearing** or **Update status**. A case moves Reported → Investigation → Mediation → Settlement → Closed, or it can be Referred. You can also escalate an incident to a blotter case from `/incidents`.
-- **Role-based access:** open the user menu (top right) and choose **View as role**. Switching to Tanod or Treasurer changes the sidebar, the Quick Create options and which routes you can open.
-- **Global search:** press `Ctrl/Cmd + K`.
-- **UX states:** add `?state=loading`, `?state=empty` or `?state=error` to any list or detail URL. For example, `/residents?state=error` shows the error state, and **Try again** loads the page normally.
-- Data changes last until you reload the page (the store is in memory).
+**Phase 1**
+
+- **Certificate workflow:** open `/requests/req-0000` (Juan Dela Cruz, Barangay Clearance), then click **Approve**, **Mark ready for release** and **Release & complete**. Approving creates the certificate. Releasing a paid certificate asks for an O.R. number and also records a treasury collection under that number.
+- **Blotter workflow:** a case moves Reported → Investigation → Mediation → Settlement → Closed. You can schedule hearings from the case, and escalate an incident to a blotter case from `/incidents`.
+
+**Phase 2**
+
+- **Budget chain:** `/finance/allocations`, then the **PPA breakdown** tab, then **Drainage Improvement** (`/ppas/…`). From there, go to an obligation, then a disbursement, then its expense. The Infrastructure allocation reproduces the spec's example: ₱2,000,000 allocated, ₱1,350,000 obligated, ₱1,120,000 disbursed, 67.5% utilized.
+- **Approvals:** `/finance/disbursements` lists vouchers that are **For Review** or **For Approval**. Approving and releasing one asks for a check number, creates the expense, and rolls the obligation to *Partially* or *Fully Disbursed*. Approval is blocked when supporting documents are missing or the amount exceeds the PPA's available balance.
+- **Alerts:** the Finance Dashboard flags categories nearing their limit (thresholds are set in **Settings → Finance**), pending approvals, missing documents, overdue liquidation and unreconciled collections.
+- **Governance chain:** open a session, then its **Legislation** and **Minutes**. For a live run-through: **Schedule session**, **Start session** (roll call and quorum), **Record motion**, **Adjourn**, then **Draft minutes**.
+- **Roles:** use **View as role** in the user menu. The Treasurer sees Finance, Assets and Inventory. The Secretary sees Governance. A Kagawad sees only the committees, PPAs and projects assigned to them.
+- **Other:** press `Ctrl/Cmd + K` for global search. Add `?state=loading|empty|error` to any URL to see those states. Data resets on reload (the store is in memory).
 
 ## Project structure
 
 ```text
 app/
-  (app)/            Pages inside the app shell (sidebar + header), plus loading/error/not-found
-  (print)/          Print pages without the app shell (certificate print view)
+  (app)/              Pages inside the app shell; finance/, governance/, projects/, assets/, inventory/, ppas/
+  (print)/            Print pages without the shell (certificate, official receipt)
 components/
-  layout/           AppSidebar, AppHeader, MobileSidebar, ThemeToggle, GlobalSearch, QuickCreate, AccessGuard
-  shared/           StatCard, StatusBadge, EmptyState, ErrorState, skeletons, ConfirmDialog, FormDialog,
-                    FormDrawer, DetailDrawer, ContentTabs, Timeline, ActivityFeed, FileUpload, Pagination,
-                    FilterBar, DateRangeFilter, SearchInput, NotesPanel, DetailList, …
-  tables/           DataTable (the only table implementation), column header, row actions, feature set
-  forms/            RHF-bound fields: text, textarea, select, multi-select, date, phone, money, address,
-                    file, resident/household/official/user pickers; FormRoot, FormSection
-  charts/           SimpleBarChart, TrendChart, ProportionBar, ChartTooltip
-  providers/        ThemeProvider, EntityDialogsProvider (mounts every create/edit form in one place)
-  ui/               shadcn/ui primitives (generated; formatting excluded from Prettier)
-features/<module>/  Module-specific views, forms and columns (residents, certificates, blotter, …)
-data/mock/          Seeded, deterministic mock datasets
-types/              All domain models
-lib/                constants, formatting, status tones, permissions, navigation, validation, store
-hooks/              Data hooks, simulated page loading, hotkeys
+  layout/             Sidebar, header, global search, quick create, access guard
+  shared/             StatCard, StatusBadge, dialogs/drawers, Timeline, FileUpload, FilterBar, …
+                      Phase 2: Money, UtilizationBar/ProgressMetric/DualProgress, ApprovalTimeline,
+                      WorkflowActions, AttachmentsPanel, FiscalYearSelector, ProgressUpdateDialog, FormActionBar
+  tables/             DataTable (the only table implementation), BreakdownTable, row actions
+  forms/              RHF-bound fields + pickers (resident, household, official, user, PPA, fund source,
+                      committee, obligation, session, multi-official)
+  charts/             SimpleBarChart, GroupedBarChart, TrendChart, ProportionBar
+  providers/          ThemeProvider, EntityDialogsProvider (every create/edit dialog is mounted here)
+features/<module>/    Module views and forms (finance/, governance/, operations/ for Phase 2)
+data/mock/            Seeded, deterministic, relational mock data (budgets.ts, ppas.ts, obligations.ts, …)
+types/                index.ts + finance.ts, governance.ts, operations.ts (re-exported from index)
+lib/                  constants, format, status, permissions, navigation, validation, finance, workflows, store/
+hooks/                use-data (collections), use-finance (ledger, fiscal year, assignment scope), use-page-load
 ```
-
-Route files in `app/` stay thin. Each one renders a view from `features/`.
 
 ## Architecture notes
 
-**Data layer.** Components read data only through `hooks/use-data.ts` and change it only through `lib/store/actions.ts`. These two files are where the backend will plug in: keep the function signatures and replace the bodies with API calls (for example TanStack Query plus server actions). Every action also writes an audit log entry. The actions also keep related records in sync: approving a request creates its certificate, and releasing the certificate completes the request.
+**Data layer.** Components read data through `hooks/use-data.ts` and change it only through the action modules in `lib/store/` (`actions.ts` for Phase 1; `finance-actions.ts`, `governance-actions.ts` and `operations-actions.ts` for Phase 2). All of them share `helpers.ts`, which handles ids, numbering and the audit log. These modules are where the backend will plug in: keep the signatures and replace the bodies with API calls. Every significant action writes an audit entry.
 
-**Loading, empty and error states.** `usePageLoad()` adds simulated network delay, so every page runs through the same states it will have against a real API. `DataTable` and `LoadState` render these states the same way on every page.
+**Finance is derived, never duplicated.** Allocations and PPAs store only approved (and revised) amounts. Obligated, disbursed, available and utilization are calculated from obligation and disbursement records by `lib/finance.ts` (`useLedger()`):
 
-**Tables.** Every list uses `DataTable`. Each module passes in its columns, `search.getText`, faceted `filters` (with a `getValue` per row) and an optional `dateFilter`. Sorting, pagination, column visibility, row actions, export (placeholder) and the empty, loading and error states are built in.
+- Available = Approved − Obligated
+- Utilization = Obligated ÷ Approved
+- Disbursement utilization = Disbursed ÷ Approved
 
-**Forms.** Each form is a Zod schema plus fields from `@/components/forms` inside a `FormRoot`, placed in a `FormDialog` or `FormDrawer`. Shared validators such as `phMobile`, `isoDate` and `addressSchema` live in `lib/validation.ts`. To open a create or edit form, call `useEntityDialogs().open({ type, record?, defaults? })` rather than mounting the form yourself.
+Projects read their budget and financial progress from their PPA. Disbursements read their PPA through the obligation. Inventory quantity on hand is summed from stock transactions.
 
-**Status colours.** `lib/status.ts` is the single map from status to tone. `StatusBadge` uses it, so a given status has the same colour in every module.
+**Workflows.** `lib/workflows.ts` declares the steps, transitions, required capability, remarks and extra fields (such as a check number) for budgets, obligations, disbursements, projects, ordinances and resolutions. `ApprovalTimeline` and `WorkflowActions` render any of these definitions, so no module has its own approval UI.
 
-**Permissions.** `lib/permissions.ts` defines which modules each role can see, plus its capabilities (`write`, `approve`, `admin`). The sidebar, Quick Create, global search, row actions and `AccessGuard` all read from it. This is a mock implementation and can be replaced by claims from real authentication.
+**Relationships in the mock data.**
 
-## Adding a module (e.g. Health, DRRM)
+- Budget → allocation → PPA → obligation → disbursement → expense.
+- Session → agenda and motions → ordinance or resolution (each stores its `sessionId`) → minutes.
+- Project ↔ PPA.
+- Asset → the disbursement that paid for it.
+- Certificate → collection.
+- The FY 2026 budget → its appropriation ordinance.
 
-1. Add the model to `types/index.ts` and the key to `ModuleKey`.
-2. Add mock data in `data/mock/`, a slice to `lib/store/app-store.ts`, and actions and a hook for it.
+**Permissions.** `lib/permissions.ts` maps each role to its modules and capabilities (`write`, `approve`, `admin`, `finance`, `financeApprove`, `governance`, `operations`). Kagawads are scoped to their assignments via `useAssignmentScope()`. `/ppas/*` is reachable from either the allocations module or the projects module.
+
+**Forms.** Each form is a Zod schema plus fields from `@/components/forms` inside a `FormRoot`, placed in a `FormDialog` or `FormDrawer`. Open one with `useEntityDialogs().open(...)`. Long forms (residents, incidents, sessions, minutes) are full pages with the shared `FormActionBar`.
+
+**Currency.** Use `formatPeso`/`formatPesoCompact` or the `<Money>` component. Never format pesos inline.
+
+## Adding a module
+
+1. Add the model under `types/` and the key to `ModuleKey`.
+2. Add mock data in `data/mock/`, a slice in `lib/store/app-store.ts`, actions in `lib/store/<domain>-actions.ts` and a hook in `hooks/use-data.ts`.
 3. Add a nav entry in `lib/navigation.ts` and role access in `lib/permissions.ts`.
-4. Build the view in `features/<module>/` using `DataTable`, the shared form fields and `PageHeader`.
-5. Add `app/(app)/<module>/page.tsx` that renders the view.
+4. Build the view in `features/<module>/` with `DataTable`, the shared fields and `PageHeader`. If it has an approval flow, add a definition to `lib/workflows.ts`.
+5. Add `app/(app)/<route>/page.tsx` that renders the view.
 
-## Out of scope for Phase 1
+## Not yet in scope
 
-Backend APIs, database, authentication, payments, SMS, GIS, government integrations (DILG, PSA, PhilSys), AI features, and the Health, DRRM, Finance and Inventory modules. The structure above is designed so these can be added later.
+General ledger, double-entry accounting, payroll, procurement bidding and purchase orders, supplier portal, health records, social assistance, DRRM and relief distribution, resident portal, online payments (GCash and Maya are labels only), SMS, GIS, AI and government API integrations.

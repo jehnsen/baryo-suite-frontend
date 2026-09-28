@@ -20,7 +20,7 @@ export function SidebarFooterInfo() {
 export function AppSidebar() {
   const settings = useSettings()
   return (
-    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar lg:flex">
+    <aside className="no-print sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar lg:flex">
       <div className="flex h-14 items-center border-b px-4">
         <Brand subtitle={`Brgy. ${settings.barangayName}, ${settings.municipality}`} />
       </div>

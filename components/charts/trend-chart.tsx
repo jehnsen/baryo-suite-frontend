@@ -1,7 +1,7 @@
 "use client"
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { ChartTooltip } from "./chart-tooltip"
+import { ChartTooltip, formatTick, type ValueFormat } from "./chart-tooltip"
 import type { CategoryDatum } from "./bar-chart"
 
 /** Single-series area trend with a hover crosshair. */
@@ -10,11 +10,13 @@ export function TrendChart({
   seriesName,
   height = 240,
   color = "var(--chart-1)",
+  valueFormat,
 }: {
   data: CategoryDatum[]
   seriesName: string
   height?: number
   color?: string
+  valueFormat?: ValueFormat
 }) {
   const gradientId = `trend-${seriesName.replace(/\W/g, "")}`
   return (
@@ -29,8 +31,15 @@ export function TrendChart({
           </defs>
           <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
           <XAxis dataKey="label" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} tickLine={false} axisLine={false} width={32} allowDecimals={false} />
-          <Tooltip cursor={{ stroke: "var(--muted-foreground)", strokeDasharray: "3 3" }} content={(p) => <ChartTooltip {...p} />} />
+          <YAxis
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+            tickLine={false}
+            axisLine={false}
+            width={valueFormat === "peso" ? 52 : 32}
+            allowDecimals={false}
+            tickFormatter={(v: number) => formatTick(v, valueFormat)}
+          />
+          <Tooltip cursor={{ stroke: "var(--muted-foreground)", strokeDasharray: "3 3" }} content={(p) => <ChartTooltip {...p} valueFormat={valueFormat} />} />
           <Area
             type="monotone"
             dataKey="value"

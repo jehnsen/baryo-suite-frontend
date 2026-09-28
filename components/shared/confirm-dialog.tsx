@@ -13,8 +13,8 @@ interface ConfirmDialogProps {
   confirmLabel?: string
   cancelLabel?: string
   destructive?: boolean
-  /** May be async; the dialog shows a spinner and closes when it resolves. */
-  onConfirm: () => void | Promise<void>
+  /** May be async; the dialog shows a spinner and closes when it resolves. Return `false` to keep it open. */
+  onConfirm: () => void | boolean | Promise<void | boolean>
   /** Extra content, e.g. a remarks field. */
   children?: React.ReactNode
   confirmDisabled?: boolean
@@ -37,8 +37,8 @@ export function ConfirmDialog({
   const handleConfirm = async () => {
     setPending(true)
     try {
-      await onConfirm()
-      onOpenChange(false)
+      const result = await onConfirm()
+      if (result !== false) onOpenChange(false)
     } finally {
       setPending(false)
     }

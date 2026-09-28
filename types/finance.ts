@@ -43,13 +43,7 @@ export interface BudgetAllocation {
 }
 
 export type FundSourceType =
-  | "National Tax Allotment"
-  | "Local Collections"
-  | "Grants"
-  | "Donations"
-  | "Municipal / City Assistance"
-  | "Provincial Assistance"
-  | "Other Sources"
+  "National Tax Allotment" | "Local Collections" | "Grants" | "Donations" | "Municipal / City Assistance" | "Provincial Assistance" | "Other Sources"
 
 export interface FundSource {
   id: ID

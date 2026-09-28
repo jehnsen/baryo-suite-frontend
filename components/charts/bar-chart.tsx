@@ -1,7 +1,7 @@
 "use client"
 
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { ChartTooltip } from "./chart-tooltip"
+import { ChartTooltip, formatTick, type ValueFormat } from "./chart-tooltip"
 
 export interface CategoryDatum {
   label: string
@@ -20,6 +20,7 @@ interface SimpleBarChartProps {
   showValues?: boolean
   /** Width reserved for category labels on horizontal charts. */
   categoryWidth?: number
+  valueFormat?: ValueFormat
 }
 
 const axisTick = { fill: "var(--muted-foreground)", fontSize: 11 }
@@ -34,7 +35,9 @@ export function SimpleBarChart({
   unit,
   showValues,
   categoryWidth = 64,
+  valueFormat,
 }: SimpleBarChartProps) {
+  const tickFormatter = (v: number) => formatTick(v, valueFormat)
   return (
     <div style={{ height }} role="img" aria-label={`${seriesName} bar chart`}>
       <ResponsiveContainer width="100%" height="100%">
@@ -47,18 +50,32 @@ export function SimpleBarChart({
           <CartesianGrid stroke="var(--chart-grid)" vertical={Boolean(horizontal)} horizontal={!horizontal} />
           {horizontal ? (
             <>
-              <XAxis type="number" tick={axisTick} tickLine={false} axisLine={false} allowDecimals={false} />
+              <XAxis type="number" tick={axisTick} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={tickFormatter} />
               <YAxis type="category" dataKey="label" tick={axisTick} tickLine={false} axisLine={false} width={categoryWidth} />
             </>
           ) : (
             <>
               <XAxis dataKey="label" tick={axisTick} tickLine={false} axisLine={false} interval={0} />
-              <YAxis tick={axisTick} tickLine={false} axisLine={false} width={32} allowDecimals={false} />
+              <YAxis
+                tick={axisTick}
+                tickLine={false}
+                axisLine={false}
+                width={valueFormat === "peso" ? 52 : 32}
+                allowDecimals={false}
+                tickFormatter={tickFormatter}
+              />
             </>
           )}
-          <Tooltip cursor={{ fill: "var(--muted)", opacity: 0.6 }} content={(p) => <ChartTooltip {...p} unit={unit} />} />
+          <Tooltip cursor={{ fill: "var(--muted)", opacity: 0.6 }} content={(p) => <ChartTooltip {...p} unit={unit} valueFormat={valueFormat} />} />
           <Bar dataKey="value" name={seriesName} fill={color} radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} maxBarSize={36}>
-            {showValues && <LabelList dataKey="value" position={horizontal ? "right" : "top"} className="fill-muted-foreground text-[11px] tabular-nums" />}
+            {showValues && (
+              <LabelList
+                dataKey="value"
+                position={horizontal ? "right" : "top"}
+                formatter={(v: unknown) => formatTick(Number(v), valueFormat)}
+                className="fill-muted-foreground text-[11px] tabular-nums"
+              />
+            )}
           </Bar>
         </BarChart>
       </ResponsiveContainer>

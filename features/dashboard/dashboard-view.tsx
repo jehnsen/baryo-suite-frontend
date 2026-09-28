@@ -17,6 +17,7 @@ import { StatCard } from "@/components/shared/stat-card"
 import { useAuditLogs, useCurrentUser, useLookups, useSettings } from "@/hooks/use-data"
 import { usePageLoad } from "@/hooks/use-page-load"
 import { auditToActivity } from "@/lib/activity"
+import { OperationsSnapshot } from "./operations-snapshot"
 import { PendingTasks } from "./pending-tasks"
 import { useDashboardStats } from "./use-dashboard-stats"
 
@@ -118,6 +119,8 @@ export function DashboardView() {
               href={canAccess("certificates") ? "/certificates" : undefined}
             />
           </section>
+
+          <OperationsSnapshot />
 
           <section className="grid gap-4 lg:grid-cols-3">
             <SectionCard title="Population by Gender" description="Active residents">

@@ -5,7 +5,7 @@ import { Lock } from "lucide-react"
 import { EmptyState } from "@/components/shared/empty-state"
 import { PageHeader } from "@/components/shared/page-header"
 import { useCurrentUser } from "@/hooks/use-data"
-import { IncidentFormActionBar } from "./incident-form-action-bar"
+import { FormActionBar } from "@/components/shared/form-action-bar"
 import { IncidentFormFields, useIncidentCreateForm } from "./incident-form"
 
 export function IncidentCreatePage() {
@@ -39,7 +39,7 @@ function IncidentCreateFormPage({ onCancel, onSaved }: { onCancel: () => void; o
         breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }, { label: "Incidents", href: "/incidents" }, { label: "Report" }]}
       />
       <IncidentFormFields form={form} formId={FORM_ID} onSubmit={onSubmit} />
-      <IncidentFormActionBar formId={FORM_ID} submitLabel="Record incident" isSubmitting={form.formState.isSubmitting} onCancel={onCancel} />
+      <FormActionBar formId={FORM_ID} submitLabel="Record incident" isSubmitting={form.formState.isSubmitting} onCancel={onCancel} />
     </div>
   )
 }

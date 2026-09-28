@@ -270,6 +270,43 @@ function CertificateTypesEditor({ settings }: { settings: BarangaySettings }) {
   )
 }
 
+/* ------------------------------ Finance settings ------------------------- */
+
+const thresholdSchema = z
+  .object({
+    warning: z.string().regex(/^\d{1,2}$/, "Enter 1–99"),
+    critical: z.string().regex(/^\d{1,2}$/, "Enter 1–99"),
+  })
+  .refine((v) => Number(v.critical) > Number(v.warning), { path: ["critical"], message: "Must be higher than the warning threshold" })
+
+function FinanceSettings({ settings }: { settings: BarangaySettings }) {
+  const form = useForm({
+    resolver: zodResolver(thresholdSchema),
+    defaultValues: { warning: String(settings.budgetThresholds.warning), critical: String(settings.budgetThresholds.critical) },
+  })
+  const onSubmit = async (v: z.output<typeof thresholdSchema>) => {
+    await simulateLatency()
+    const budgetThresholds = { warning: Number(v.warning), critical: Number(v.critical) }
+    settingsActions.update({ budgetThresholds }, "Budget thresholds")
+    form.reset(v)
+    toast.success("Budget thresholds saved", { description: `Warning at ${v.warning}% · critical at ${v.critical}% · exhausted at 100%` })
+  }
+  return (
+    <SectionCard
+      title="Budget utilization alerts"
+      description="Allocations and PPAs are flagged when obligations reach these percentages of the approved amount."
+    >
+      <FormRoot id="finance-settings-form" form={form} onSubmit={onSubmit}>
+        <FormSection>
+          <TextField name="warning" label="Nearing limit (%)" type="number" required description="Shown in amber." />
+          <TextField name="critical" label="Critical (%)" type="number" required description="Shown in red. 100% is always “Exhausted”." />
+        </FormSection>
+        <SaveBar pending={form.formState.isSubmitting} dirty={form.formState.isDirty} />
+      </FormRoot>
+    </SectionCard>
+  )
+}
+
 export function SettingsView() {
   const load = usePageLoad()
   const settings = useSettings()
@@ -286,6 +323,7 @@ export function SettingsView() {
           tabs={[
             { value: "profile", label: "Barangay Profile", content: <ProfileForm settings={settings} /> },
             { value: "officials", label: "Signatories", content: <SignatoriesForm settings={settings} /> },
+            { value: "finance", label: "Finance", content: <FinanceSettings settings={settings} /> },
             {
               value: "master",
               label: "Master Data",

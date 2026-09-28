@@ -2,7 +2,6 @@ import type {
   Announcement,
   AnnouncementStatus,
   AuditAction,
-  AuditModule,
   BarangayOfficial,
   BarangaySettings,
   BlotterCase,
@@ -21,50 +20,13 @@ import type {
 } from "@/types"
 import { CERTIFICATE_PREFIX, SERVICE_TO_CERTIFICATE } from "@/lib/constants"
 import { fullName, toISODate } from "@/lib/format"
-import { appStore, type AppState } from "./app-store"
+import { collectionActions } from "./finance-actions"
+import { currentUserId, get, log, newId, nextNumber, now, patchIn, set, today } from "./helpers"
 
 /**
  * All mutations go through these functions. They are the seam where real API
  * calls will be plugged in later: keep signatures, replace bodies.
  */
-
-let seq = 0
-const newId = (prefix: string) => `${prefix}-${Date.now().toString(36)}${(seq++).toString(36)}`
-const now = () => new Date().toISOString()
-const today = () => toISODate(new Date())
-const year = () => new Date().getFullYear()
-
-function nextNumber(existing: string[], prefix: string, width = 4): string {
-  const re = new RegExp(`^${prefix}-${year()}-(\\d+)$`)
-  const max = existing.reduce((m, n) => {
-    const match = n.match(re)
-    return match ? Math.max(m, Number(match[1])) : m
-  }, 0)
-  return `${prefix}-${year()}-${String(max + 1).padStart(width, "0")}`
-}
-
-const set = appStore.setState
-const get = appStore.getState
-const currentUserId = () => get().session.currentUserId
-
-function log(action: AuditAction, module: AuditModule, recordLabel: string, details: string, recordId?: string) {
-  const entry = {
-    id: newId("log"),
-    timestamp: now(),
-    userId: currentUserId(),
-    action,
-    module,
-    recordId,
-    recordLabel,
-    details,
-    ipAddress: "192.168.1.24",
-  }
-  set((s) => ({ ...s, auditLogs: [entry, ...s.auditLogs] }))
-}
-
-function patchIn<K extends keyof AppState, T extends { id: string }>(key: K, id: string, patch: (item: T) => T) {
-  set((s) => ({ ...s, [key]: (s[key] as unknown as T[]).map((item) => (item.id === id ? patch(item) : item)) }))
-}
 
 const residentName = (id: string) => fullName(get().residents.find((r) => r.id === id))
 
@@ -198,6 +160,9 @@ export const certificateActions = {
     const action: AuditAction = status === "Approved" ? "Approved" : status === "Released" ? "Issued" : status === "Cancelled" ? "Cancelled" : "Status Changed"
     log(action, "Certificates", `${cert.certificateNumber} – ${residentName(cert.residentId)}`, `${cert.type} marked as ${status}.`, id)
 
+    // Paid certificates become treasury collections under the same O.R. number.
+    if (status === "Released") collectionActions.recordFromCertificate(get().certificates.find((c) => c.id === id)!)
+
     // Keep the linked service request in sync with the document lifecycle.
     if (cert.requestId) {
       if (status === "Approved") requestActions.setStatus(cert.requestId, "Ready for Release", "Certificate approved and signed.", { silentCascade: true })
@@ -279,6 +244,7 @@ export const requestActions = {
           status: target,
           ...(target === "Released" ? { dateIssued: today(), orNumber: opts.orNumber ?? c.orNumber } : {}),
         }))
+        if (target === "Released") collectionActions.recordFromCertificate(get().certificates.find((c) => c.id === certificateId)!)
         log(
           target === "Released" ? "Issued" : "Approved",
           "Certificates",
@@ -487,9 +453,11 @@ export const settingsActions = {
 
 export const sessionActions = {
   switchUser(userId: string) {
-    set((s) => ({ ...s, session: { currentUserId: userId } }))
+    set((s) => ({ ...s, session: { ...s.session, currentUserId: userId } }))
+  },
+  setFiscalYear(fiscalYear: number) {
+    set((s) => ({ ...s, session: { ...s.session, fiscalYear } }))
   },
 }
 
-/** Simulated network latency for mock mutations. */
-export const simulateLatency = (ms = 550) => new Promise((resolve) => setTimeout(resolve, ms))
+export { simulateLatency } from "./helpers"

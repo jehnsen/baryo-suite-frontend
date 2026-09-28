@@ -93,3 +93,65 @@ export function pluralize(count: number, singular: string, plural = `${singular}
 export function toISODate(d: Date): string {
   return format(d, "yyyy-MM-dd")
 }
+
+/** ₱8.45M · ₱487.5K — for KPI tiles and chart axes. Use formatPeso for records. */
+export function formatPesoCompact(amount: number): string {
+  const abs = Math.abs(amount)
+  const sign = amount < 0 ? "−" : ""
+  if (abs >= 1_000_000) return `${sign}₱${(abs / 1_000_000).toFixed(abs >= 10_000_000 ? 1 : 2).replace(/\.?0+$/, "")}M`
+  if (abs >= 1_000) return `${sign}₱${(abs / 1_000).toFixed(1).replace(/\.0$/, "")}K`
+  return `${sign}₱${abs.toFixed(0)}`
+}
+
+export const formatPercent = (value: number, digits = 1) => `${(Number.isFinite(value) ? value : 0).toFixed(digits)}%`
+
+const ONES = [
+  "",
+  "One",
+  "Two",
+  "Three",
+  "Four",
+  "Five",
+  "Six",
+  "Seven",
+  "Eight",
+  "Nine",
+  "Ten",
+  "Eleven",
+  "Twelve",
+  "Thirteen",
+  "Fourteen",
+  "Fifteen",
+  "Sixteen",
+  "Seventeen",
+  "Eighteen",
+  "Nineteen",
+]
+const TENS = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+
+function chunkToWords(n: number): string {
+  const parts: string[] = []
+  if (n >= 100) parts.push(`${ONES[Math.floor(n / 100)]} Hundred`)
+  const rest = n % 100
+  if (rest >= 20) parts.push(TENS[Math.floor(rest / 10)] + (rest % 10 ? `-${ONES[rest % 10]}` : ""))
+  else if (rest > 0) parts.push(ONES[rest])
+  return parts.join(" ")
+}
+
+/** "One Thousand Five Hundred Pesos and 50/100" — for receipts and vouchers. */
+export function pesosInWords(amount: number): string {
+  const whole = Math.floor(amount)
+  const cents = Math.round((amount - whole) * 100)
+  if (whole === 0) return `Zero Pesos and ${String(cents).padStart(2, "0")}/100`
+  const scales = ["", "Thousand", "Million", "Billion"]
+  const words: string[] = []
+  let n = whole
+  let i = 0
+  while (n > 0) {
+    const chunk = n % 1000
+    if (chunk) words.unshift(`${chunkToWords(chunk)}${scales[i] ? " " + scales[i] : ""}`)
+    n = Math.floor(n / 1000)
+    i++
+  }
+  return `${words.join(" ")} Peso${whole === 1 ? "" : "s"}${cents ? ` and ${String(cents).padStart(2, "0")}/100` : " Only"}`
+}

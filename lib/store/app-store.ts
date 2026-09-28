@@ -1,4 +1,22 @@
 import type {
+  AnnualBudget,
+  Asset,
+  BarangayAssembly,
+  BarangaySession,
+  BudgetAllocation,
+  Collection,
+  Committee,
+  Disbursement,
+  Expense,
+  FundSource,
+  InventoryItem,
+  InventoryTransaction,
+  MeetingMinutes,
+  Obligation,
+  Ordinance,
+  PPA,
+  Project,
+  Resolution,
   Announcement,
   AuditLog,
   BarangayOfficial,
@@ -26,7 +44,29 @@ export interface AppState {
   users: User[]
   auditLogs: AuditLog[]
   settings: BarangaySettings
-  session: { currentUserId: string }
+  // Phase 2 — finance
+  budgets: AnnualBudget[]
+  allocations: BudgetAllocation[]
+  fundSources: FundSource[]
+  ppas: PPA[]
+  collections: Collection[]
+  obligations: Obligation[]
+  disbursements: Disbursement[]
+  expenses: Expense[]
+  // Phase 2 — governance
+  sessions: BarangaySession[]
+  minutes: MeetingMinutes[]
+  ordinances: Ordinance[]
+  resolutions: Resolution[]
+  committees: Committee[]
+  assemblies: BarangayAssembly[]
+  // Phase 2 — operations
+  projects: Project[]
+  assets: Asset[]
+  inventoryItems: InventoryItem[]
+  inventoryTransactions: InventoryTransaction[]
+  /** fiscalYear is the finance context shared by every finance screen. */
+  session: { currentUserId: string; fiscalYear: number }
 }
 
 export const appStore = createStore<AppState>({
@@ -41,7 +81,25 @@ export const appStore = createStore<AppState>({
   users: mock.users,
   auditLogs: mock.auditLogs,
   settings: mock.barangaySettings,
-  session: { currentUserId: "usr-001" },
+  budgets: mock.budgets,
+  allocations: mock.allocations,
+  fundSources: mock.fundSources,
+  ppas: mock.ppas,
+  collections: mock.collections,
+  obligations: mock.obligations,
+  disbursements: mock.disbursements,
+  expenses: mock.expenses,
+  sessions: mock.sessions,
+  minutes: mock.minutes,
+  ordinances: mock.ordinances,
+  resolutions: mock.resolutions,
+  committees: mock.committees,
+  assemblies: mock.assemblies,
+  projects: mock.projects,
+  assets: mock.assets,
+  inventoryItems: mock.inventoryItems,
+  inventoryTransactions: mock.inventoryTransactions,
+  session: { currentUserId: "usr-001", fiscalYear: 2026 },
 })
 
 export function useAppStore<T>(selector: (s: AppState) => T): T {

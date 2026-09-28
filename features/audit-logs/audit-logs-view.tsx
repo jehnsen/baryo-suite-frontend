@@ -14,24 +14,11 @@ import { DataTableColumnHeader } from "@/components/tables/data-table-column-hea
 import { createAppColumnHelper } from "@/components/tables/table-features"
 import { useAuditLogs, useLookups, useUsers } from "@/hooks/use-data"
 import { usePageLoad } from "@/hooks/use-page-load"
-import { MODULE_ICONS, recordHref } from "@/lib/activity"
+import { ACTION_TONES, MODULE_ICONS, recordHref } from "@/lib/activity"
 import { AUDIT_ACTIONS, AUDIT_MODULES, toOptions } from "@/lib/constants"
 import { formatDateTime } from "@/lib/format"
-import type { Tone } from "@/lib/status"
 
 const col = createAppColumnHelper<AuditLog>()
-
-const ACTION_TONE: Partial<Record<AuditLog["action"], Tone>> = {
-  Created: "info",
-  Approved: "success",
-  Issued: "success",
-  Published: "success",
-  Rejected: "danger",
-  Cancelled: "danger",
-  Archived: "neutral",
-  "Status Changed": "warning",
-  "Hearing Scheduled": "purple",
-}
 
 export function AuditLogsView() {
   const load = usePageLoad()
@@ -60,7 +47,7 @@ export function AuditLogsView() {
         }),
         col.accessor("action", {
           header: "Action",
-          cell: ({ getValue }) => <StatusBadge status={getValue()} tone={ACTION_TONE[getValue()] ?? "neutral"} showDot={false} />,
+          cell: ({ getValue }) => <StatusBadge status={getValue()} tone={ACTION_TONES[getValue()] ?? "neutral"} showDot={false} />,
           meta: { label: "Action" },
         }),
         col.accessor("module", {

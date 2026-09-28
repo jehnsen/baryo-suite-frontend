@@ -8,7 +8,7 @@ import { LoadState, RecordNotFound } from "@/components/shared/load-state"
 import { PageHeader } from "@/components/shared/page-header"
 import { useCurrentUser, useIncidents } from "@/hooks/use-data"
 import { usePageLoad } from "@/hooks/use-page-load"
-import { IncidentFormActionBar } from "./incident-form-action-bar"
+import { FormActionBar } from "@/components/shared/form-action-bar"
 import { IncidentFormFields, useIncidentEditForm } from "./incident-form"
 
 export function IncidentEditPage({ id }: { id: string }) {
@@ -63,7 +63,7 @@ function IncidentEditFormPage({ incident, onCancel, onSaved }: { incident: Incid
         ]}
       />
       <IncidentFormFields form={form} formId={FORM_ID} onSubmit={onSubmit} />
-      <IncidentFormActionBar formId={FORM_ID} submitLabel="Save changes" isSubmitting={form.formState.isSubmitting} onCancel={onCancel} />
+      <FormActionBar formId={FORM_ID} submitLabel="Save changes" isSubmitting={form.formState.isSubmitting} onCancel={onCancel} />
     </div>
   )
 }
