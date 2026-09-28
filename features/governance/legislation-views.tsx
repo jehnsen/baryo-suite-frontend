@@ -199,6 +199,7 @@ export function LegislationListView({ kind }: { kind: LegislationKind }) {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={ScrollText}
         title={c.plural}
         description={c.description}
         breadcrumbs={[{ label: "Governance" }, { label: c.plural }]}
@@ -211,7 +212,7 @@ export function LegislationListView({ kind }: { kind: LegislationKind }) {
         }
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map(([label, value]) => (
             <StatCard key={label} label={String(label)} value={Number(value)} />
           ))}

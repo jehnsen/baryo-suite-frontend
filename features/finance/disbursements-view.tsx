@@ -130,6 +130,7 @@ export function DisbursementsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={Banknote}
         title="Disbursements"
         description="Disbursement vouchers paid against approved obligations."
         breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Disbursements" }]}
@@ -145,7 +146,7 @@ export function DisbursementsView() {
         }
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Released" value={formatPesoCompact(stats.released)} hint={`${stats.releasedCount} vouchers`} />
           <StatCard label="Pending" value={stats.pending.length} hint={`${formatPesoCompact(stats.pendingAmount)} in review or approval`} />
           <StatCard label="Approved, not released" value={stats.approvedCount} hint="Ready for payment" />

@@ -19,25 +19,31 @@ interface ContentTabsProps {
   className?: string
 }
 
-/** Underline tabs with optional counts; scrolls horizontally on small screens. */
+/** Contained tabs with optional counts; scrolls horizontally on small screens. */
 export function ContentTabs({ tabs, defaultValue, value, onValueChange, className }: ContentTabsProps) {
   const visible = tabs.filter((t) => !t.hidden)
   return (
-    <Tabs defaultValue={defaultValue ?? visible[0]?.value} value={value} onValueChange={onValueChange} className={cn("gap-4", className)}>
-      <div className="-mx-4 overflow-x-auto border-b px-4 sm:mx-0 sm:px-0">
-        <TabsList variant="line" className="h-9 gap-2 p-0">
+    <Tabs defaultValue={defaultValue ?? visible[0]?.value} value={value} onValueChange={onValueChange} className={cn("min-w-0 gap-5", className)}>
+      <div className="max-w-full overflow-x-auto rounded-xl border border-border/80 bg-card p-1.5 shadow-xs">
+        <TabsList className="gap-1 bg-transparent p-0 group-data-horizontal/tabs:h-10">
           {visible.map((t) => (
-            <TabsTrigger key={t.value} value={t.value} className="flex-none px-2.5 group-data-horizontal/tabs:after:bottom-[-1px]">
+            <TabsTrigger
+              key={t.value}
+              value={t.value}
+              className="group/tab flex-none rounded-lg px-4 data-active:bg-accent data-active:text-accent-foreground dark:data-active:bg-accent dark:data-active:text-accent-foreground"
+            >
               {t.label}
               {t.count !== undefined && (
-                <span className="ml-1 rounded-full bg-muted px-1.5 text-[11px] font-medium text-muted-foreground tabular-nums">{t.count}</span>
+                <span className="ml-1 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground tabular-nums group-data-active/tab:bg-primary/10 group-data-active/tab:text-primary">
+                  {t.count}
+                </span>
               )}
             </TabsTrigger>
           ))}
         </TabsList>
       </div>
       {visible.map((t) => (
-        <TabsContent key={t.value} value={t.value}>
+        <TabsContent key={t.value} value={t.value} className="min-w-0">
           {t.content}
         </TabsContent>
       ))}

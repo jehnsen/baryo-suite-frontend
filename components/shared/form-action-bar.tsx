@@ -19,8 +19,8 @@ export function FormActionBar({
   secondary?: React.ReactNode
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 lg:left-60">
-      <div className="mx-auto flex max-w-4xl items-center justify-end gap-2 px-4 py-3 sm:px-6">
+    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 shadow-[0_-4px_24px_-12px_rgb(24_57_34/0.15)] backdrop-blur supports-backdrop-filter:bg-card/85 lg:left-60">
+      <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-end gap-2 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
         {secondary}
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel

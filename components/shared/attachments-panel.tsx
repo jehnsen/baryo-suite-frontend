@@ -23,16 +23,18 @@ export function AttachmentsPanel({ attachments, onAdd, emptyLabel = "No attachme
   const [open, setOpen] = useState(false)
   const [files, setFiles] = useState<UploadedFile[]>([])
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {attachments.length ? (
         <FileList files={attachments} />
       ) : (
-        <EmptyState
-          compact
-          icon={Paperclip}
-          title={emptyLabel}
-          description={required ? "Supporting documents are required before this record can be approved." : undefined}
-        />
+        <div className="rounded-xl border border-dashed border-primary/20 bg-accent/20">
+          <EmptyState
+            compact
+            icon={Paperclip}
+            title={emptyLabel}
+            description={required ? "Supporting documents are required before this record can be approved." : undefined}
+          />
+        </div>
       )}
       {onAdd && (
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
@@ -46,7 +48,7 @@ export function AttachmentsPanel({ attachments, onAdd, emptyLabel = "No attachme
           if (!o) setFiles([])
         }}
       >
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="app-content rounded-2xl sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Add attachments</DialogTitle>
             <DialogDescription>Files are kept as metadata until the document service is connected.</DialogDescription>

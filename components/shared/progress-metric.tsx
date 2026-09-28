@@ -23,18 +23,21 @@ interface UtilizationBarProps {
   showLabel?: boolean
   className?: string
   size?: "sm" | "md"
+  label?: string
 }
 
 /** Horizontal bar with optional threshold markers — budget utilization, progress, stock level. */
-export function UtilizationBar({ value, thresholds, tone, showLabel = true, className, size = "sm" }: UtilizationBarProps) {
+export function UtilizationBar({ value, thresholds, tone, showLabel = true, className, size = "sm", label = "Utilization" }: UtilizationBarProps) {
   const t = tone ?? utilizationTone(value, thresholds)
   const width = Math.max(0, Math.min(100, value))
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <div
-        className={cn("relative flex-1 overflow-hidden rounded-full bg-muted", size === "sm" ? "h-1.5" : "h-2.5")}
+        className={cn("relative flex-1 overflow-hidden rounded-full bg-muted", size === "sm" ? "h-2" : "h-2.5")}
         role="meter"
-        aria-valuenow={Math.round(value)}
+        aria-label={label}
+        aria-valuetext={formatPercent(value)}
+        aria-valuenow={Math.round(width)}
         aria-valuemin={0}
         aria-valuemax={100}
       >
@@ -66,12 +69,12 @@ export function ProgressMetric({
   className?: string
 }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-3 rounded-xl border border-border/70 bg-background/70 p-4", className)}>
       <div className="flex items-baseline justify-between gap-2 text-sm">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-semibold tabular-nums">{formatPercent(value, 0)}</span>
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        <span className="text-xl font-semibold tracking-tight tabular-nums">{formatPercent(value, 0)}</span>
       </div>
-      <UtilizationBar value={value} tone={tone} thresholds={thresholds} showLabel={false} size="md" />
+      <UtilizationBar label={label} value={value} tone={tone} thresholds={thresholds} showLabel={false} size="md" />
       {detail && <p className="text-xs text-muted-foreground">{detail}</p>}
     </div>
   )

@@ -98,12 +98,13 @@ export function MinutesView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={NotebookPen}
         title="Minutes"
         description="Minutes of Sangguniang Barangay sessions. Draft minutes from a completed session."
         breadcrumbs={[{ label: "Governance" }, { label: "Minutes" }]}
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Approved" value={rows.filter((r) => r.status === "Approved").length} />
           <StatCard label="Awaiting approval" value={rows.filter((r) => r.status !== "Approved").length} />
           <StatCard label="Open action items" value={rows.reduce((s, r) => s + r.openItems, 0)} hint="Across all minutes" />

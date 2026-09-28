@@ -52,11 +52,11 @@ export function FormSection({
   columns?: 1 | 2 | 3
 }) {
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
       {title && (
-        <div>
-          <h3 className="text-sm font-semibold">{title}</h3>
-          {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <div className="border-b border-border/70 pb-3">
+          <h3 className="text-sm font-semibold tracking-tight">{title}</h3>
+          {description && <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>}
         </div>
       )}
       <div className={cn("grid gap-4", columns === 2 && "sm:grid-cols-2", columns === 3 && "sm:grid-cols-3")}>{children}</div>

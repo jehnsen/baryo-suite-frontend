@@ -133,8 +133,8 @@ function SessionDetailContent({ s }: { s: BarangaySession }) {
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <ContentTabs
             tabs={[
               {

@@ -134,6 +134,7 @@ export function AllocationsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={ChartPie}
         title="Budget Allocations"
         description={budget ? `${budget.title} distributed by category and PPA.` : `No budget for FY ${fiscalYear}.`}
         breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Budget Allocations" }]}
@@ -150,7 +151,7 @@ export function AllocationsView() {
       />
 
       {totals && !load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Appropriations" value={formatPesoCompact(totals.approved)} hint={`${rows.length} categories`} />
           <StatCard label="Obligated" value={formatPesoCompact(totals.obligated)} hint={`${formatPercent(totals.utilization)} utilization`} />
           <StatCard label="Disbursed" value={formatPesoCompact(totals.disbursed)} hint={`${formatPercent(totals.disbursementRate)} of appropriations`} />

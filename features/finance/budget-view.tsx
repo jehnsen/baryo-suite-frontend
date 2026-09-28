@@ -44,6 +44,7 @@ export function BudgetView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={PiggyBank}
         title="Annual Budget"
         description="Annual barangay budget, approval and funding sources."
         breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Annual Budget" }]}
@@ -149,7 +150,7 @@ function BudgetOverview({ budget }: { budget: AnnualBudget }) {
           </div>
         }
       >
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {[
             ["Estimated income", budget.estimatedIncome],
             ["Approved budget", budget.approvedBudget],
@@ -158,9 +159,9 @@ function BudgetOverview({ budget }: { budget: AnnualBudget }) {
             ["Obligated", totals.obligated],
             ["Remaining", budget.approvedBudget - totals.obligated],
           ].map(([label, value]) => (
-            <div key={label as string} className="rounded-lg border p-3">
+            <div key={label as string} className="rounded-xl border border-primary/10 bg-accent/35 p-4">
               <p className="text-xs text-muted-foreground">{label}</p>
-              <p className="text-lg font-semibold tabular-nums">{formatPesoCompact(value as number)}</p>
+              <p className="my-1 text-2xl font-semibold tracking-tight tabular-nums">{formatPesoCompact(value as number)}</p>
               <Money value={value as number} className="text-xs" muted />
             </div>
           ))}
@@ -269,7 +270,7 @@ function FundSourcesTab({ fiscalYear }: { fiscalYear: number }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={`Funding FY ${fiscalYear}`} value={formatPesoCompact(total)} icon={Landmark} hint={`${data.length} sources`} />
       </div>
       <DataTable

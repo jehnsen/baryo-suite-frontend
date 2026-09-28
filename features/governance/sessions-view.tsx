@@ -140,6 +140,7 @@ export function SessionsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={CalendarDays}
         title="Barangay Sessions"
         description="Sessions of the Sangguniang Barangay, their agenda, attendance and actions."
         breadcrumbs={[{ label: "Governance" }, { label: "Sessions" }]}
@@ -154,8 +155,9 @@ export function SessionsView() {
         }
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
+            emphasis="primary"
             label="Next session"
             value={next ? formatDate(next.date, "MMM d") : "—"}
             icon={CalendarDays}
@@ -168,7 +170,12 @@ export function SessionsView() {
             hint="Regular, special and emergency"
           />
           <StatCard label="Measures acted on" value={rows.reduce((s, r) => s + r.legislation, 0)} hint="Ordinances and resolutions" />
-          <StatCard label="Minutes pending approval" value={minutes.filter((m) => m.status !== "Approved").length} href="/governance/minutes" />
+          <StatCard
+            emphasis="secondary"
+            label="Minutes pending approval"
+            value={minutes.filter((m) => m.status !== "Approved").length}
+            href="/governance/minutes"
+          />
         </div>
       )}
       <DataTable

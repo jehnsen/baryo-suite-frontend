@@ -140,6 +140,7 @@ export function ReportsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={FileSpreadsheet}
         className="no-print"
         title="Financial Reports"
         description="Summary reports for the Sangguniang Barangay, COA and the barangay assembly."

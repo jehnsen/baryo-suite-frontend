@@ -123,8 +123,8 @@ function Content({ p }: { p: Project }) {
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SectionCard title="Progress" className="lg:col-span-2">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
+        <SectionCard title="Progress" className="min-w-0 lg:col-span-2">
           <DualProgress physical={p.physicalProgress} financial={m?.disbursementRate ?? 0} />
           {m && (
             <div className="mt-4 grid grid-cols-2 gap-3 border-t pt-4 text-sm sm:grid-cols-4">
@@ -163,8 +163,8 @@ function Content({ p }: { p: Project }) {
         </SectionCard>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <ContentTabs
             tabs={[
               {

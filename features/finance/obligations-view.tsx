@@ -143,6 +143,7 @@ export function ObligationsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={FilePen}
         title="Obligations"
         description="Obligation requests committed against PPAs before disbursement."
         breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Obligations" }]}
@@ -158,7 +159,7 @@ export function ObligationsView() {
         }
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Awaiting approval" value={stats.review.length} hint={`${formatPesoCompact(stats.reviewAmount)} for review`} />
           <StatCard label="Committed (obligated)" value={formatPesoCompact(stats.committed)} hint="Approved obligations" />
           <StatCard label="Undisbursed balance" value={formatPesoCompact(stats.undisbursed)} hint="Approved but not yet paid" />

@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import { ChevronDown } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { usePathname } from "next/navigation"
 import { ALL_NAV_ITEMS, NAV_GROUPS } from "@/lib/navigation"
 import { useCurrentUser, useServiceRequests, useBlotters } from "@/hooks/use-data"
@@ -22,38 +24,53 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <nav className="flex flex-col gap-5" aria-label="Main">
+    <nav className="flex flex-col gap-2" aria-label="Main">
       {NAV_GROUPS.map((group) => {
         const items = group.items.filter((i) => canAccess(i.module))
         if (items.length === 0) return null
         return (
-          <div key={group.label} className="space-y-1">
-            <p className="px-3 pb-1.5 text-[10px] font-semibold tracking-[0.14em] text-sidebar-foreground/55 uppercase">{group.label}</p>
-            {items.map((item) => {
-              const active = item.href === activeHref
-              const badge = badges[item.href]
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onNavigate}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-                    active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary"
-                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
-                  )}
-                >
-                  <item.icon aria-hidden="true" className={cn("size-4 shrink-0", active ? "text-sidebar-primary" : "text-sidebar-foreground/60")} />
-                  <span className="flex-1 truncate">{item.title}</span>
-                  {badge ? (
-                    <span className="rounded-md bg-sidebar-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-sidebar-primary tabular-nums">{badge}</span>
-                  ) : null}
-                </Link>
-              )
-            })}
-          </div>
+          <Collapsible
+            key={`${group.label}-${items.some((item) => item.href === activeHref)}`}
+            defaultOpen={group.label === "Overview" || items.some((item) => item.href === activeHref)}
+            className="group/nav-section"
+          >
+            <CollapsibleTrigger className="flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-left text-[11px] font-semibold tracking-wide text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-foreground focus-visible:outline-2 focus-visible:outline-sidebar-ring">
+              <span className="flex-1">{group.label}</span>
+              {items.some((item) => item.href === activeHref) && <span className="size-1.5 rounded-full bg-sidebar-primary" aria-hidden="true" />}
+              <ChevronDown
+                className="size-3.5 shrink-0 -rotate-90 text-sidebar-foreground/50 transition-transform group-data-[state=open]/nav-section:rotate-0"
+                aria-hidden="true"
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-1 pb-2">
+              {items.map((item) => {
+                const active = item.href === activeHref
+                const badge = badges[item.href]
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onNavigate}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+                      active
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary"
+                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                    )}
+                  >
+                    <item.icon aria-hidden="true" className={cn("size-4 shrink-0", active ? "text-sidebar-primary" : "text-sidebar-foreground/60")} />
+                    <span className="flex-1 truncate">{item.title}</span>
+                    {badge ? (
+                      <span className="rounded-md bg-sidebar-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-sidebar-primary tabular-nums">
+                        {badge}
+                      </span>
+                    ) : null}
+                  </Link>
+                )
+              })}
+            </CollapsibleContent>
+          </Collapsible>
         )
       })}
     </nav>

@@ -32,13 +32,13 @@ export function FormDialog({
 }: FormContainerProps & { size?: keyof typeof SIZES }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !isSubmitting && onOpenChange(o)}>
-      <DialogContent className={cn("flex max-h-[90dvh] flex-col gap-0 p-0", SIZES[size])}>
-        <DialogHeader className="border-b px-5 py-4">
-          <DialogTitle>{title}</DialogTitle>
+      <DialogContent className={cn("app-content flex max-h-[90dvh] flex-col gap-0 overflow-hidden rounded-2xl p-0", SIZES[size])}>
+        <DialogHeader className="shrink-0 border-b bg-accent/40 px-6 py-5 pr-12">
+          <DialogTitle className="text-lg tracking-tight">{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto px-5 py-5">{children}</div>
-        <DialogFooter className="m-0 rounded-b-xl border-t px-5 py-3">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">{children}</div>
+        <DialogFooter className="m-0 shrink-0 rounded-none border-t bg-muted/35 px-6 py-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Cancel
           </Button>

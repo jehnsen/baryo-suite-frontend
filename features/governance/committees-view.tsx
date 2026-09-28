@@ -117,6 +117,7 @@ export function CommitteesView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={UsersRound}
         title="Committees"
         description="Standing committees of the Sangguniang Barangay. Members come from the Officials directory."
         breadcrumbs={[{ label: "Governance" }, { label: "Committees" }]}

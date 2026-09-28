@@ -152,6 +152,7 @@ export function ProjectsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={FolderKanban}
         title="Programs & Projects"
         description="Implementation of PPAs: physical and financial progress, milestones and contractors."
         breadcrumbs={[{ label: "Operations" }, { label: "Programs & Projects" }]}
@@ -170,9 +171,10 @@ export function ProjectsView() {
         </Alert>
       )}
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Active projects" value={active.length} icon={FolderKanban} />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard emphasis="primary" label="Active projects" value={active.length} icon={FolderKanban} />
           <StatCard
+            emphasis="secondary"
             label="Delayed"
             value={rows.filter((r) => r.status === "Delayed").length}
             hint={`${rows.filter((r) => r.overdue).length} past target date`}

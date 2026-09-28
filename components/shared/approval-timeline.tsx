@@ -27,6 +27,7 @@ export function ApprovalTimeline<S extends string>({ workflow, status, history, 
     const returned = i > 0 && onPath && stepStatuses.indexOf(h.status) < stepStatuses.indexOf(history[i - 1].status)
     return {
       id: `${h.status}-${i}`,
+      current: isCurrent,
       title: returned ? `Returned to ${labelFor(h.status).toLowerCase()}` : labelFor(h.status),
       icon: workflow.terminal.includes(h.status) ? Ban : returned ? RotateCcw : isCurrent ? Clock : CheckCircle2,
       tone:

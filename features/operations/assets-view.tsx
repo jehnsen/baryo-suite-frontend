@@ -136,6 +136,7 @@ export function AssetsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={Monitor}
         title="Assets"
         description="Property, plant and equipment of the barangay and their accountable custodians."
         breadcrumbs={[{ label: "Operations" }, { label: "Assets" }]}
@@ -148,10 +149,10 @@ export function AssetsView() {
         }
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Assets in service" value={inService.length} icon={Monitor} />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard emphasis="primary" label="Assets in service" value={inService.length} icon={Monitor} />
           <StatCard label="Total acquisition cost" value={formatPesoCompact(inService.reduce((s, a) => s + a.acquisitionCost, 0))} hint="Excludes disposed" />
-          <StatCard label="Under maintenance" value={assets.filter((a) => a.status === "Under Maintenance").length} />
+          <StatCard emphasis="secondary" label="Under maintenance" value={assets.filter((a) => a.status === "Under Maintenance").length} />
           <StatCard
             label="Poor / unserviceable"
             value={inService.filter((a) => a.condition === "Poor" || a.condition === "Unserviceable").length}

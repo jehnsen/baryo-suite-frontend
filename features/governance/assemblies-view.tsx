@@ -78,6 +78,7 @@ export function AssembliesView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={Vote}
         title="Barangay Assemblies"
         description="Semestral assemblies of residents (March and October)."
         breadcrumbs={[{ label: "Governance" }, { label: "Assemblies" }]}

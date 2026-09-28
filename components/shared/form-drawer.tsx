@@ -9,13 +9,13 @@ import type { FormContainerProps } from "./form-dialog"
 export function FormDrawer({ open, onOpenChange, title, description, formId, submitLabel = "Save", isSubmitting, children }: FormContainerProps) {
   return (
     <Sheet open={open} onOpenChange={(o) => !isSubmitting && onOpenChange(o)}>
-      <SheetContent className="w-full gap-0 sm:max-w-2xl">
-        <SheetHeader className="border-b px-5 py-4">
-          <SheetTitle>{title}</SheetTitle>
+      <SheetContent className="app-content gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-2xl">
+        <SheetHeader className="shrink-0 border-b bg-accent/40 px-6 py-5 pr-12">
+          <SheetTitle className="text-lg tracking-tight">{title}</SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto px-5 py-5">{children}</div>
-        <SheetFooter className="flex-row justify-end border-t px-5 py-3">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">{children}</div>
+        <SheetFooter className="shrink-0 flex-row flex-wrap justify-end border-t bg-muted/35 px-6 py-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Cancel
           </Button>

@@ -177,13 +177,14 @@ export function ExpensesView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={Receipt}
         title="Expenses"
         description="Recorded automatically when disbursements are released. Attach official receipts to liquidate."
         breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Expenses" }]}
         actions={<FiscalYearSelector />}
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Expenses YTD" value={formatPesoCompact(total)} icon={Receipt} hint={formatPeso(total)} />
           <StatCard label="Records" value={data.length} hint="From released vouchers" />
           <StatCard label="Largest category" value={largest?.label ?? "—"} hint={largest ? formatPeso(largest.amount) : undefined} />

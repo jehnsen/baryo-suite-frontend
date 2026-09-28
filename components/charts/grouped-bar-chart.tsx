@@ -25,10 +25,10 @@ const axisTick = { fill: "var(--muted-foreground)", fontSize: 11 }
 export function GroupedBarChart({ data, series, height = 280, horizontal, categoryWidth = 120, valueFormat }: GroupedBarChartProps) {
   const tickFormatter = (v: number) => formatTick(v, valueFormat)
   return (
-    <div className="space-y-3">
-      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground" aria-label="Legend">
+    <div className="min-w-0 space-y-4">
+      <ul className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground" aria-label="Legend">
         {series.map((s) => (
-          <li key={s.key} className="flex items-center gap-1.5">
+          <li key={s.key} className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1">
             <span className="size-2.5 rounded-[2px]" style={{ background: s.color }} />
             {s.name}
           </li>
@@ -57,7 +57,15 @@ export function GroupedBarChart({ data, series, height = 280, horizontal, catego
             )}
             <Tooltip cursor={{ fill: "var(--muted)", opacity: 0.6 }} content={(p) => <ChartTooltip {...p} valueFormat={valueFormat} />} />
             {series.map((s) => (
-              <Bar key={s.key} dataKey={s.key} name={s.name} fill={s.color} radius={horizontal ? [0, 3, 3, 0] : [3, 3, 0, 0]} maxBarSize={14} />
+              <Bar
+                isAnimationActive={false}
+                key={s.key}
+                dataKey={s.key}
+                name={s.name}
+                fill={s.color}
+                radius={horizontal ? [0, 3, 3, 0] : [3, 3, 0, 0]}
+                maxBarSize={14}
+              />
             ))}
           </BarChart>
         </ResponsiveContainer>

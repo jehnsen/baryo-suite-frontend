@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useMemo } from "react"
-import { FileClock, FolderKanban, HandCoins, Receipt } from "lucide-react"
+import { ArrowRight, FileClock, FolderKanban, HandCoins, Receipt } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { UtilizationBar } from "@/components/shared/progress-metric"
@@ -47,51 +47,73 @@ export function OperationsSnapshot() {
   if (!showFinance && !showProjects) return null
 
   return (
-    <section aria-label="Finance and operations" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      {showFinance && data.budget && data.totals && (
-        <Card size="sm" className="sm:col-span-2">
-          <CardContent className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[13px] font-medium text-muted-foreground">{data.budget.title}</span>
-              <Button variant="link" size="sm" className="h-auto p-0" asChild>
-                <Link href="/finance">Finance</Link>
-              </Button>
-            </div>
-            <div className="flex flex-wrap items-baseline gap-x-3">
-              <span className="text-2xl font-semibold tracking-tight tabular-nums">{formatPesoCompact(data.budget.approvedBudget)}</span>
-              <span className="text-xs text-muted-foreground">
-                {formatPesoCompact(data.totals.obligated)} obligated · {formatPesoCompact(data.totals.disbursed)} disbursed
-              </span>
-            </div>
-            <UtilizationBar value={data.totals.utilization} thresholds={budgetThresholds} size="md" />
-            <p className="text-xs text-muted-foreground">Budget utilization {formatPercent(data.totals.utilization)} of appropriations</p>
-          </CardContent>
-        </Card>
-      )}
-      {showFinance && (
-        <StatCard
-          label="Collections YTD"
-          value={formatPesoCompact(data.collections)}
-          icon={HandCoins}
-          hint={formatPeso(data.collections)}
-          href="/finance/collections"
-        />
-      )}
-      {showFinance && (
-        <StatCard label="Expenses YTD" value={formatPesoCompact(data.expenses)} icon={Receipt} hint={formatPeso(data.expenses)} href="/finance/expenses" />
-      )}
-      {showProjects && (
-        <StatCard
-          label="Active Projects"
-          value={data.activeProjects.length}
-          icon={FolderKanban}
-          hint={`${data.activeProjects.filter((p) => p.status === "Delayed").length} delayed`}
-          href="/projects"
-        />
-      )}
-      {showFinance && (
-        <StatCard label="Pending Financial Approvals" value={data.pendingApprovals} icon={FileClock} hint="Obligations, vouchers and budgets" href="/finance" />
-      )}
+    <section aria-label="Finance and operations" className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight">Finance & operations</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Resources and projects supporting your community</p>
+        </div>
+        {showFinance && (
+          <Button asChild size="sm" variant="link" className="gap-2">
+            <Link href="/finance">
+              Finance overview <ArrowRight className="size-3.5" />
+            </Link>
+          </Button>
+        )}
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {showFinance && data.budget && data.totals && (
+          <Card size="sm" className="welcome-panel min-w-0 ring-primary/10 data-[size=sm]:[--card-spacing:--spacing(5)] sm:col-span-2">
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[13px] font-medium text-muted-foreground">{data.budget.title}</span>
+                <Button variant="link" size="sm" className="h-auto p-0" asChild>
+                  <Link href="/finance">Finance</Link>
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-baseline gap-x-3">
+                <span className="text-3xl font-semibold tracking-tight tabular-nums">{formatPesoCompact(data.budget.approvedBudget)}</span>
+                <span className="text-xs text-muted-foreground">
+                  {formatPesoCompact(data.totals.obligated)} obligated · {formatPesoCompact(data.totals.disbursed)} disbursed
+                </span>
+              </div>
+              <UtilizationBar value={data.totals.utilization} thresholds={budgetThresholds} size="md" />
+              <p className="text-xs text-muted-foreground">Budget utilization {formatPercent(data.totals.utilization)} of appropriations</p>
+            </CardContent>
+          </Card>
+        )}
+        {showFinance && (
+          <StatCard
+            label="Collections YTD"
+            value={formatPesoCompact(data.collections)}
+            icon={HandCoins}
+            hint={formatPeso(data.collections)}
+            href="/finance/collections"
+          />
+        )}
+        {showFinance && (
+          <StatCard label="Expenses YTD" value={formatPesoCompact(data.expenses)} icon={Receipt} hint={formatPeso(data.expenses)} href="/finance/expenses" />
+        )}
+        {showProjects && (
+          <StatCard
+            label="Active Projects"
+            value={data.activeProjects.length}
+            icon={FolderKanban}
+            hint={`${data.activeProjects.filter((p) => p.status === "Delayed").length} delayed`}
+            href="/projects"
+          />
+        )}
+        {showFinance && (
+          <StatCard
+            emphasis="secondary"
+            label="Pending Financial Approvals"
+            value={data.pendingApprovals}
+            icon={FileClock}
+            hint="Obligations, vouchers and budgets"
+            href="/finance"
+          />
+        )}
+      </div>
     </section>
   )
 }

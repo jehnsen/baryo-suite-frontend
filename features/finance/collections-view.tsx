@@ -191,6 +191,7 @@ export function CollectionsView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={HandCoins}
         title="Collections"
         description="Official receipts for barangay fees, clearances and charges."
         breadcrumbs={[{ label: "Finance", href: "/finance" }, { label: "Collections" }]}
@@ -211,7 +212,7 @@ export function CollectionsView() {
         }
       />
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Collections YTD" value={formatPesoCompact(stats.ytd)} icon={HandCoins} hint={formatPeso(stats.ytd)} />
           <StatCard label="This month" value={formatPesoCompact(stats.month)} hint="All collection types" />
           <StatCard label="Today" value={formatPeso(stats.today)} hint={`${stats.todayCount} receipts`} />

@@ -180,6 +180,7 @@ export function InventoryView() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={Boxes}
         title="Inventory"
         description="Consumable supplies. Quantities are computed from stock transactions."
         breadcrumbs={[{ label: "Operations" }, { label: "Inventory" }]}
@@ -201,9 +202,9 @@ export function InventoryView() {
         </Alert>
       )}
       {!load.isLoading && !load.isError && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Items tracked" value={stock.length} icon={Boxes} />
-          <StatCard label="Low / out of stock" value={low.length} />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard emphasis="primary" label="Items tracked" value={stock.length} icon={Boxes} />
+          <StatCard emphasis="secondary" label="Low / out of stock" value={low.length} />
           <StatCard label="Transactions this month" value={transactions.filter((t) => t.date.slice(0, 7) === new Date().toISOString().slice(0, 7)).length} />
           <StatCard
             label="Relief supplies on hand"

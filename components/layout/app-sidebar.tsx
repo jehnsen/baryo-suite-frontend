@@ -22,8 +22,8 @@ export function SidebarFooterInfo() {
 export function AppSidebar() {
   const settings = useSettings()
   return (
-    <aside className="no-print sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar lg:flex">
-      <div className="flex h-14 items-center border-b px-4">
+    <aside className="no-print sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
+      <div className="flex h-20 shrink-0 items-center border-b border-sidebar-border px-4">
         <Brand subtitle={`Brgy. ${settings.barangayName}, ${settings.municipality}`} />
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">

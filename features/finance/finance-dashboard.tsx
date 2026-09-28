@@ -87,6 +87,7 @@ export function FinanceDashboard() {
   return (
     <div className="space-y-6">
       <PageHeader
+        icon={Landmark}
         title="Finance Dashboard"
         description={budget ? `${budget.title} · ${budget.status}` : `No budget recorded for FY ${fiscalYear}`}
         breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }, { label: "Finance" }]}
@@ -98,7 +99,7 @@ export function FinanceDashboard() {
       ) : load.isLoading ? (
         <>
           <StatCardsSkeleton count={8} />
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-5 lg:grid-cols-3">
             <ChartSkeleton className="lg:col-span-2" />
             <ChartSkeleton />
           </div>
@@ -118,8 +119,9 @@ export function FinanceDashboard() {
         </SectionCard>
       ) : (
         <>
-          <section aria-label="Key financial figures" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <section aria-label="Key financial figures" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
+              emphasis="primary"
               label="Approved Annual Budget"
               value={formatPesoCompact(budget!.approvedBudget)}
               icon={Landmark}
@@ -168,6 +170,7 @@ export function FinanceDashboard() {
               href="/finance/expenses"
             />
             <StatCard
+              emphasis="secondary"
               label="Pending Disbursements"
               value={data.pending.length}
               icon={FileClock}
@@ -176,7 +179,7 @@ export function FinanceDashboard() {
             />
           </section>
 
-          <section className="grid gap-4 lg:grid-cols-3">
+          <section className="grid gap-5 lg:grid-cols-3">
             <SectionCard title="Budget vs Actual" description="Allocation, obligations and disbursements per category" className="lg:col-span-2">
               <GroupedBarChart
                 data={data.budgetVsActual}
@@ -201,7 +204,7 @@ export function FinanceDashboard() {
             </SectionCard>
           </section>
 
-          <section className="grid gap-4 lg:grid-cols-2">
+          <section className="grid gap-5 lg:grid-cols-2">
             <SectionCard title="Monthly Collections" description={`FY ${fiscalYear}, all collection types`}>
               <SimpleBarChart data={data.monthlyCollections} seriesName="Collections" valueFormat="peso" height={230} />
             </SectionCard>
@@ -210,7 +213,7 @@ export function FinanceDashboard() {
             </SectionCard>
           </section>
 
-          <section className="grid gap-4 lg:grid-cols-2">
+          <section className="grid gap-5 lg:grid-cols-2">
             <SectionCard
               title="Budget Utilization by Category"
               description={`Obligated ÷ allocation · markers at ${budgetThresholds.warning}% and ${budgetThresholds.critical}%`}

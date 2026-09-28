@@ -22,7 +22,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { SimpleBarChart } from "@/components/charts/bar-chart"
 import { ProportionBar } from "@/components/charts/proportion-bar"
-import { TrendChart } from "@/components/charts/trend-chart"
 import { ActivityFeed } from "@/components/shared/activity-feed"
 import { ErrorState } from "@/components/shared/error-state"
 import { ChartSkeleton, StatCardsSkeleton } from "@/components/shared/loading-skeleton"

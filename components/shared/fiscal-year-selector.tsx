@@ -12,8 +12,8 @@ export function FiscalYearSelector() {
   const budgets = useBudgets()
   return (
     <Select value={String(fiscalYear)} onValueChange={(v) => setFiscalYear(Number(v))}>
-      <SelectTrigger className="h-8 w-44" aria-label="Fiscal year">
-        <CalendarRange className="text-muted-foreground" />
+      <SelectTrigger className="h-10 w-48 rounded-xl border-primary/15 bg-card shadow-xs" aria-label="Fiscal year">
+        <CalendarRange className="text-primary" />
         <SelectValue />
       </SelectTrigger>
       <SelectContent align="end">
