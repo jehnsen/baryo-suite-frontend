@@ -29,7 +29,7 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-9 gap-2 px-1.5">
+        <Button variant="ghost" className="h-11 gap-2.5 px-1.5" aria-label={`Account menu for ${user.name}`}>
           <PersonAvatar name={user.name} size="sm" />
           <span className="hidden text-left leading-tight md:block">
             <span className="block max-w-36 truncate text-sm font-medium">{user.name}</span>

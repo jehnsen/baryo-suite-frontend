@@ -38,8 +38,8 @@ export function QuickCreate() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" className="h-8">
-          <Plus /> <span className="hidden sm:inline">Create</span>
+        <Button size="sm" className="h-10 gap-2 px-3.5 shadow-sm" aria-label="Create new record">
+          <Plus /> <span className="hidden sm:inline">Quick create</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">

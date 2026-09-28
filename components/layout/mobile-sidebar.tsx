@@ -19,13 +19,16 @@ export function MobileSidebar() {
           <Menu />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 gap-0 bg-sidebar p-0">
-        <SheetHeader className="h-14 justify-center border-b px-4">
+      <SheetContent
+        side="left"
+        className="app-sidebar w-72 gap-0 border-sidebar-border bg-sidebar p-0 text-sidebar-foreground [&>button]:text-sidebar-foreground"
+      >
+        <SheetHeader className="h-24 justify-center border-b border-sidebar-border px-6">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <SheetDescription className="sr-only">Main navigation</SheetDescription>
           <Brand subtitle={`Brgy. ${settings.barangayName}, ${settings.municipality}`} />
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto px-2.5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
           <SidebarNav onNavigate={() => setOpen(false)} />
         </div>
         <div className="p-3">

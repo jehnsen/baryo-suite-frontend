@@ -7,10 +7,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <EntityDialogsProvider>
       <div className="flex min-h-dvh">
+        <a
+          href="#main-content"
+          className="sr-only fixed top-3 left-3 z-50 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground focus:not-sr-only"
+        >
+          Skip to content
+        </a>
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <AppHeader />
-          <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-6 sm:px-6 lg:py-8">
+          <main id="main-content" tabIndex={-1} className="app-content mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 outline-none sm:px-6 lg:px-8 lg:py-8">
             <AccessGuard>{children}</AccessGuard>
           </main>
         </div>

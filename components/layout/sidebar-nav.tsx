@@ -19,13 +19,13 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <nav className="flex flex-col gap-4" aria-label="Main">
+    <nav className="flex flex-col gap-5" aria-label="Main">
       {NAV_GROUPS.map((group) => {
         const items = group.items.filter((i) => canAccess(i.module))
         if (items.length === 0) return null
         return (
-          <div key={group.label} className="space-y-0.5">
-            <p className="px-2.5 pb-1 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">{group.label}</p>
+          <div key={group.label} className="space-y-1">
+            <p className="px-3 pb-1.5 text-[10px] font-semibold tracking-[0.14em] text-sidebar-foreground/55 uppercase">{group.label}</p>
             {items.map((item) => {
               const active = pathname === item.href || pathname.startsWith(item.href + "/")
               const badge = badges[item.href]
@@ -36,16 +36,16 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex h-8 items-center gap-2.5 rounded-md px-2.5 text-sm font-medium transition-colors",
+                    "relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                     active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary"
                       : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                   )}
                 >
-                  <item.icon className={cn("size-4", active ? "text-sidebar-primary" : "text-muted-foreground")} />
+                  <item.icon aria-hidden="true" className={cn("size-4 shrink-0", active ? "text-sidebar-primary" : "text-sidebar-foreground/60")} />
                   <span className="flex-1 truncate">{item.title}</span>
                   {badge ? (
-                    <span className="rounded-full bg-sidebar-primary/10 px-1.5 text-[11px] font-semibold text-sidebar-primary tabular-nums">{badge}</span>
+                    <span className="rounded-md bg-sidebar-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-sidebar-primary tabular-nums">{badge}</span>
                   ) : null}
                 </Link>
               )

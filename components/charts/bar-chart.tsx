@@ -57,7 +57,7 @@ export function SimpleBarChart({
             </>
           )}
           <Tooltip cursor={{ fill: "var(--muted)", opacity: 0.6 }} content={(p) => <ChartTooltip {...p} unit={unit} />} />
-          <Bar dataKey="value" name={seriesName} fill={color} radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} maxBarSize={36}>
+          <Bar isAnimationActive={false} dataKey="value" name={seriesName} fill={color} radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} maxBarSize={36}>
             {showValues && <LabelList dataKey="value" position={horizontal ? "right" : "top"} className="fill-muted-foreground text-[11px] tabular-nums" />}
           </Bar>
         </BarChart>

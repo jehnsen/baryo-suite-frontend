@@ -24,8 +24,8 @@ export function ActivityFeed({ items, className, emptyLabel = "No activity yet" 
       {items.map((item) => {
         const Icon = item.icon ?? Activity
         return (
-          <li key={item.id} className="flex gap-3 py-2.5 first:pt-0 last:pb-0">
-            <span className={cn("mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full", TONE_CLASSES[item.tone ?? "neutral"].icon)}>
+          <li key={item.id} className="flex gap-3 py-3.5 first:pt-0 last:pb-0">
+            <span className={cn("mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full", TONE_CLASSES[item.tone ?? "neutral"].icon)}>
               <Icon className="size-3.5" />
             </span>
             <div className="min-w-0 flex-1">
@@ -40,7 +40,7 @@ export function ActivityFeed({ items, className, emptyLabel = "No activity yet" 
                     <span className="font-medium">{item.target}</span>
                   ))}
               </p>
-              <p className="text-xs text-muted-foreground">{formatRelative(item.timestamp)}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">{formatRelative(item.timestamp)}</p>
             </div>
           </li>
         )

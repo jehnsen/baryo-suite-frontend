@@ -134,8 +134,9 @@ export function GlobalSearch() {
     <>
       <Button
         variant="outline"
+        aria-label="Search residents, documents and cases"
         onClick={() => setOpen(true)}
-        className="h-8 w-full max-w-sm justify-start gap-2 bg-muted/40 px-2.5 font-normal text-muted-foreground shadow-none sm:w-64 lg:w-80"
+        className="h-10 w-full max-w-sm justify-start gap-2.5 rounded-xl border-border/70 bg-background px-3 font-normal text-muted-foreground shadow-none sm:w-64 lg:w-80"
       >
         <Search className="size-4" />
         <span className="flex-1 truncate text-left">Search residents, cases…</span>

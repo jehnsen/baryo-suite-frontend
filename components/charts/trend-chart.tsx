@@ -32,6 +32,7 @@ export function TrendChart({
           <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} tickLine={false} axisLine={false} width={32} allowDecimals={false} />
           <Tooltip cursor={{ stroke: "var(--muted-foreground)", strokeDasharray: "3 3" }} content={(p) => <ChartTooltip {...p} />} />
           <Area
+            isAnimationActive={false}
             type="monotone"
             dataKey="value"
             name={seriesName}

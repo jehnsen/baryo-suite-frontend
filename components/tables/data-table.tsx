@@ -135,9 +135,9 @@ export function DataTable<TData extends RowData>({
     })
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("min-w-0 space-y-4", className)}>
       {/* Toolbar */}
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-xs lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           {search && (
             <SearchInput
@@ -234,13 +234,13 @@ export function DataTable<TData extends RowData>({
         </div>
       ) : (
         <>
-          <div className="overflow-hidden rounded-lg border bg-card">
+          <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-xs">
             <Table>
               <TableHeader className="bg-muted/40">
                 {table.getHeaderGroups().map((group) => (
                   <TableRow key={group.id} className="hover:bg-transparent">
                     {group.headers.map((header) => (
-                      <TableHead key={header.id} className={cn("h-9 text-xs font-medium text-muted-foreground", header.column.columnDef.meta?.className)}>
+                      <TableHead key={header.id} className={cn("h-12 text-xs font-semibold text-muted-foreground", header.column.columnDef.meta?.className)}>
                         {header.isPlaceholder ? null : <table.FlexRender header={header} />}
                       </TableHead>
                     ))}
@@ -278,7 +278,7 @@ export function DataTable<TData extends RowData>({
                   rows.map((row) => (
                     <TableRow key={row.id} onClick={onRowClick ? () => onRowClick(row.original) : undefined} className={cn(onRowClick && "cursor-pointer")}>
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className={cn("py-2.5", cell.column.columnDef.meta?.className)}>
+                        <TableCell key={cell.id} className={cn("py-3.5", cell.column.columnDef.meta?.className)}>
                           <table.FlexRender cell={cell} />
                         </TableCell>
                       ))}
